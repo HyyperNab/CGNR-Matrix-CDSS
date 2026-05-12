@@ -1,0 +1,31 @@
+ID,Domain,Description,Risk,Resolution,Reference
+P0-1,HIL Gates,Attenuation-Floor Paradox,Sepsis masking,Gate 1: Dynamic CRP Floor,Main Paper Eq. 3
+P0-2,HIL Gates,Rank Erasure,Logic corruption,Gate 2: 3σ Residual Norm,Main Paper Eq. 4
+P0-3,HIL Gates,Compliance Scalar Flaw,Patient abandonment,Gate 3: Zero-Veto Vector,Main Paper Eq. 5
+S-01,Construction,Hormonal normalisation missing,Data dominance,Min-Max [0-1] Scaling,Manual §1.2
+S-02,Construction,Intervention slice zeroing,Residual leakage,Zero-Veto + CLIP,Annex S5
+S-03,Construction,Rank R selection heuristic,Interpretation bias,CORCONDIA >= 85% benchmark,Main Paper §7
+S-04,Construction,Missing long-term endpoint,Prediction gap,12-week trajectory monitoring,Annex S4 §6
+S-05,Construction,Sparse tensor entries,Solver failure,Little & Rubin Imputation,Annex S5
+S-06,Construction,Geometric mean log(0),Runtime crash,Laplace smoothing (1e-6),Annex S5
+S-07,Solver,ALS local minimum,Suboptimal loadings,AdvNS Solver (20 seeds),Annex S5
+S-08,Solver,CORCONDIA instability,False Hard Stops,Tikhonov Regularisation,Annex S2.5
+S-09,Solver,Factor loading sign ambiguity,Misinterpretation,Non-negativity constraint,Main Paper §2.2
+S-10,Solver,Loading threshold (0.70),Bias,Sensitivity analysis (0.6-0.8),Main Paper §7
+S-11,Solver,Premature termination,Stale factor loadings,Convergence tol 1e-8,Annex S5
+S-12,Solver,CP degeneracy (4-mode),Logic collapse,CORCONDIA monitoring,Main Paper §2.2
+S-13,Solver,Backend dependency,Reproducibility,Library pinning (Tensorly 0.8),Annex S5
+S-14,Scoring,Prior p=0 collapse,E(B) erasure,"Priors constrained to (0, 1]",Annex S2
+S-15,Scoring,Conservative geometric mean,Under-weighting,MAP alignment validation,Annex S4 §7
+S-16,Scoring,Prior calibration drift,Stale evidence,Version control (v1.0),Annex S2.6
+S-17,Compliance,Binary encoding {0; 1},Loss of nuance,"f in [0, 1]^8 graded adherence",Annex S6.1
+S-18,Compliance,Refusal log missing,Audit gap,8-field structured log,Annex S6.2
+S-19,Escalation,Inadequate pathways,Therapy abandonment,Three-Tier Escalation,Manual §4.2
+S-20,Escalation,Confidence flag hidden,Clinician unawareness,GREEN/YELLOW/RED dash,Manual §4.1
+S-21,Escalation,MDT alert missing,Non-viable protocol,Tier 3 auto-trigger,Annex S6.3
+S-22,Safeguards,Normalisation breach,Score corruption,"CLIP[0, 1] Enforcement",Manual §3.1
+S-23,Safeguards,Micronutrient toxicity,Dose error,EFSA 2012 Dose Caps,Manual §3.3
+S-24,Safeguards,Laplace magnitude bias,Composite score skew,ε tuning (1e-6),Annex S4 §7
+S-25,Outliers,Stratification missing,Miscalibration,Sex/Menopause reference,Manual §4.3
+S-26,Compliance,f vector frozen,Stale adherence,Per-session re-assessment,Annex S6.5
+
