@@ -4,7 +4,7 @@ This repository contains the mathematical core and safety validation framework f
 
 
 ## 🚀 Overview
-The CGNR Matrix is a 4-mode tensor-based CDSS designed for personalized post-gastrectomy nutrition. It operates behind three deterministic **Hardware-in-the-Loop (HIL) safety gates**.
+The CGNR Matrix is a 3-mode tensor-based CDSS designed for personalized post-gastrectomy nutrition. It operates behind three deterministic **Hardware-in-the-Loop (HIL) safety gates**.
 
 
 ## 🛡️ Safety Gates (The Logic)
