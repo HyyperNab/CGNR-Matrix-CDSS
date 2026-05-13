@@ -28,4 +28,6 @@ S-23,Safeguards,Micronutrient toxicity,Dose error,EFSA 2012 Dose Caps,Manual §3
 S-24,Safeguards,Laplace magnitude bias,Composite score skew,ε tuning (1e-6),Annex S4 §7
 S-25,Outliers,Stratification missing,Miscalibration,Sex/Menopause reference,Manual §4.3
 S-26,Compliance,f vector frozen,Stale adherence,Per-session re-assessment,Annex S6.5
-
+S-27,Governance,SOC-29 Liability Gap,Clinician exposure,Hard Stop Exoneration Clause,Manual §5.1
+S-28,Clinical Logic,Sepsis Score Inflation (60x),Aggressive over-intervention,MAP Evidence Calibration,Main Paper §3.4
+S-29,Dimensionality,Rank Erasure (4-mode),Model instability,3-mode Tensor Reduction,Main Paper §2.1
