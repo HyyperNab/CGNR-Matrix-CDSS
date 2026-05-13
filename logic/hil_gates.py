@@ -1,6 +1,6 @@
 """
-CGNR Matrix — Hardware-in-the-Loop (HIL) Logic Gates
-Version: 1.0.0
+CGNR Matrix — Human-in-the-Loop (HIL) Logic Gates
+Version: 1.1.0 (ESPEN Submission Build)
 Author: N. Ktari
 License: MIT
 
@@ -9,6 +9,7 @@ safeguards for the CGNR Matrix Clinical Decision Support System (CDSS).
 These gates resolve critical SPOFs P0-1, P0-2, and P0-3.
 
 Legal: Boundary violations trigger SOC-29 liability protection.
+Dimensionality: n=9 (9 Priors / Interventions)
 """
 
 import numpy as np
@@ -29,13 +30,13 @@ class RankFailure(Exception):
 # ============================================================
 def gate_1_dynamic_floor(crp_value, h_hormonal):
     """
-    Nullifies hormonal factors if CRP exceeds sepsis threshold.
+    Nullifies hormonal factors if CRP exceeds sepsis threshold (50 mg/dL).
     Resolves 60x evidence inflation during catabolic crisis.
     """
-    CRP_THRESHOLD = 50.0  # mg/dL
+    CRP_THRESHOLD = 50.0  
     
     if crp_value > CRP_THRESHOLD:
-        # Collapse attenuation to zero
+        # Force collapse of hormonal attenuation
         h_hormonal = 0.0
         raise HardStop(
             gate_id="GATE_1", 
@@ -49,7 +50,7 @@ def gate_1_dynamic_floor(crp_value, h_hormonal):
 def gate_2_residual_norm(corcondia_value):
     """
     Detects rank erasure by checking core consistency residual.
-    Boundary limit: μ + 3σ = 15.0%
+    Boundary limit: μ + 3σ (Target CORCONDIA >= 85%).
     """
     MU_CORCONDIA = 85.0
     BOUNDARY_3SIGMA = 15.0
@@ -68,12 +69,12 @@ def gate_2_residual_norm(corcondia_value):
 def gate_3_zero_veto(f_vector, evidence_scores):
     """
     Enforces per-intervention veto for refused items (f=0).
-    f_vector: 8-dimensional compliance vector f ∈ [0,1]^8
+    f_vector: 9-dimensional compliance vector f ∈ [0,1]^9
     """
     e_b = np.array(evidence_scores)
     f = np.array(f_vector)
     
-    # Check for Tier 3 escalation (>= 4 refusals)
+    # Check for Tier 3 escalation (>= 4 refusals out of 9)
     veto_count = np.sum(f <= 0.0)
     if veto_count >= 4:
         raise HardStop(
@@ -81,14 +82,14 @@ def gate_3_zero_veto(f_vector, evidence_scores):
             reason=f"Protocol non-viable ({veto_count} interventions refused)"
         )
     
-    # Enforce Zero-Veto and scale others
-    # f=0 results in E(B)=0; f=0.5 results in 50% score
+    # Enforce Zero-Veto and scale evidence
+    # f=0 results in E(B)=0; f=1 results in 100% score
     adjusted_e_b = e_b * f
     
     return adjusted_e_b
 
 # ============================================================
-# POST-GATE SAFEGUARDS (S-22, S-06, S-08)
+# POST-GATE SAFEGUARDS (S-22, S-06)
 # ============================================================
 def apply_safeguards(e_b_vector):
     """
@@ -108,44 +109,44 @@ def apply_safeguards(e_b_vector):
 # ============================================================
 def run_cgnr_pipeline(patient_crp, corcondia, compliance_f, raw_scores):
     """
-    Executes sequential validation. Returns final Evidence Scores.
+    Executes sequential validation. Returns final Evidence Scores and Status Flag.
     """
     try:
-        # Stage 1: Dynamic Floor
-        h = gate_1_dynamic_floor(patient_crp, h_hormonal=1.0)
+        # Stage 1: Dynamic Floor (Hormonal Modifier)
+        _ = gate_1_dynamic_floor(patient_crp, h_hormonal=1.0)
         
-        # Stage 2: 3σ Check
+        # Stage 2: Data Integrity (CORCONDIA Residual)
         gate_2_residual_norm(corcondia)
         
-        # Stage 3: Zero-Veto
+        # Stage 3: Compliance Veto (n=9 Vector)
         gated_scores = gate_3_zero_veto(compliance_f, raw_scores)
         
-        # Final: Safeguards
+        # Final: Safeguards (Normalisation & Laplace)
         final_output = apply_safeguards(gated_scores)
         
         return final_output, "GREEN"
 
-    except HardStop as e:
-        print(f"CRITICAL SAFETY EVENT: {e}")
-        return None, "RED"
-    except RankFailure as e:
-        print(f"ALGORITHMIC FAILURE: {e}")
+    except (HardStop, RankFailure) as e:
+        # Log incident for SOC-29 liability audit
+        print(f"PIPELINE BLOCKED: {e}")
         return None, "RED"
 
 if __name__ == "__main__":
-    # Test: Vegan Patient Refusing MCT (f_7 = 0)
-    # 8 interventions: [I1, I2, I3, I4, I5, I6, I7, I8]
-    test_f = [1, 1, 1, 1, 1, 1, 0, 1] 
-    test_scores = [0.8, 0.9, 0.4, 0.7, 0.8, 0.6, 0.9, 0.5]
+    # TEST CASE: Patient refusing Intervention #7 (e.g., Vegan refusing MCT)
+    # n=9 interventions to match p1-p9 evidence priors
+    test_f = [1, 1, 1, 1, 1, 1, 0, 1, 1] 
+    test_scores = [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77]
     
+    print("--- Executing CGNR Matrix Pipeline Validation ---")
     output, flag = run_cgnr_pipeline(
         patient_crp=12.0, 
-        corcondia=86.0, 
+        corcondia=88.5, 
         compliance_f=test_f, 
         raw_scores=test_scores
     )
     
     if output is not None:
-        print(f"Pipeline Result: {flag}")
-        print(f"Gated Evidence Scores: {np.round(output, 4)}")
-
+        print(f"Status: {flag}")
+        print(f"Gated Evidence Scores (n=9): \n{np.round(output, 4)}")
+    else:
+        print(f"Status: {flag} - HARD STOP TRIGGERED")
