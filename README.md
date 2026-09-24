@@ -1,7 +1,7 @@
 # CGNR Matrix — Clinical Decision Support System
 
-[![tests](https://img.shields.io/badge/pytest-passing-brightgreen)]()
-[![python](https://img.shields.io/badge/python-3.9%2B-blue)]()
+[![CI](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml/badge.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
+[![python](https://img.shields.io/badge/python-3.10%2B-blue)]()
 [![license](https://img.shields.io/badge/license-MIT-green)]()
 
 Mathematical core and safety-validation framework for the **Constraint-Grounded
@@ -28,25 +28,30 @@ Post-gate safeguards: `CLIP[0,1]` normalisation (S-22) and Laplace zero-guard
 
 ```
 logic/
+  __init__.py        package exports
   crp_sigmoid.py     Gate 1 — hormonal attenuation sigmoid
   hil_gates.py       Gates 1–3, safeguards, pipeline
-  __init__.py        package exports
 audit/
-  spof_matrix_29.csv 29-point SPOF audit matrix
+  spof_matrix_29.csv 32-entry SPOF audit matrix (3 critical P0-* + 29 systematic S-*)
 tests/
-  test_cgnr_logic.py pytest suite
-AUDIT.md             engineering audit (math/logic/hygiene findings + fixes)
-NOTES.md             deferred solver-layer items
-requirements.txt
+  test_cgnr_logic.py pytest suite (48 tests, 90% coverage)
+.github/workflows/
+  ci.yml              CI pipeline (ruff → mypy → pytest)
+demo.py                  demo script (pipeline + attenuation table)
+.gitignore
+pyproject.toml           packaging + tool config
+requirements.txt         runtime dependencies
+AUDIT.md                 engineering audit (findings + fixes)
+NOTES.md                 deferred solver-layer items
+LICENSE                  MIT
 ```
 
 ## 🚀 Quick start
 
 ```bash
-pip install -r requirements.txt
-python -m pytest -v                 # run the test suite
-python -m logic.hil_gates           # demo pipeline run
-python -m logic.crp_sigmoid         # print the attenuation table
+pip install -e ".[dev]"          # runtime + dev dependencies
+python -m pytest -v              # run the test suite (48 tests)
+python demo.py                   # demo: pipeline run + attenuation table
 ```
 
 ### Example
@@ -79,11 +84,12 @@ fixing. Headline fixes:
 - Safeguard Laplace step no longer breaks the `CLIP[0,1]` invariant.
 - Dimensionality contradiction (`n=9` vs `n=8` in the audit matrix) resolved.
 - Boundary comparisons use `>=` on safety thresholds.
+- NaN/Inf inputs rejected across all gates and safeguards.
 - LibreOffice lock file removed from version control.
 
 ## ⚖️ Citation & liability
 
 This system implements the **SOC-29 (Safety Override Clause)** framework for
-algorithmic liability. Boundary violations trigger a `HardStop` and emit a
+algorithmic liability. Boundary violations trigger a `HardStop` and return a
 structured `Incident` record for the SOC-29 audit trail. See the Main Paper for
 the full legal specification.

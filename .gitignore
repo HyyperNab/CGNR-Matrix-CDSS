@@ -25,7 +25,9 @@ env/
 .DS_Store
 Thumbs.db
 
-# pytest / coverage
+# pytest / coverage / linter caches
 .pytest_cache/
 .coverage
 htmlcov/
+.mypy_cache/
+.ruff_cache/

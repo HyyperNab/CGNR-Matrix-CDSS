@@ -28,8 +28,8 @@ crp=50  h=0.500000   <- cliff to 0.0 above
 **Fix:** decouple the sigmoid midpoint from the hard-stop threshold. The
 inflection is now the *attenuation midpoint* (default 25 mg/dL, half the
 sepsis threshold) and `k` is calibrated (default 0.18) so the curve falls
-from ≈0.99 at CRP=0 to ≈0.01 at CRP=50 — a genuine S-curve rather than a
-flat line truncated by a cliff.
+from ≈0.99 at CRP=0 to ≈0.01 as CRP approaches the threshold — a genuine
+S-curve rather than a flat line truncated by a cliff.
 
 ## M2. Gate 2 "3σ" check is neither 3σ nor one-sided  *(FIXED)*
 **File:** `logic/hil_gates.py`
@@ -108,9 +108,9 @@ the tensor dimensionality declared in the header and `S-29`.
 returned `(None, "RED")`. A clinical safety module must not bury boundary
 violations in stdout.
 
-**Fix:** pipeline now re-raises after capturing a structured `Incident`
-record (gate id, reason) on the returned status object. Callers decide how
-to surface it. No bare `print`.
+**Fix:** pipeline now catches exceptions and returns a structured
+`PipelineResult` with an `Incident` record (gate id, reason). Callers
+decide how to surface it. No bare `print`.
 
 ## L6. Audit matrix claims unimplemented resolutions  *(NOTED)*
 S-07 (AdvNS solver, 20 seeds), S-08 (Tikhonov regularisation),

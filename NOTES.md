@@ -17,6 +17,8 @@ repo does not overstate what it delivers:
 | S-13| Library pinning (Tensorly 0.8) | deferred  |
 | S-05| Little & Rubin Imputation      | deferred  |
 
-`requirements.txt` pins only the dependencies the `logic/` core actually
-uses (numpy, matplotlib, pytest). When the solver layer lands, its
-dependencies (e.g. `tensorly>=0.8`) should be added there.
+`requirements.txt` pins only the runtime dependencies the `logic/` core
+uses (numpy, matplotlib). Development dependencies (pytest, ruff, mypy)
+are declared in `pyproject.toml` under `[project.optional-dependencies] dev`
+and installed via `pip install -e ".[dev]"`. When the solver layer lands,
+its dependencies (e.g. `tensorly>=0.8`) should be added there.

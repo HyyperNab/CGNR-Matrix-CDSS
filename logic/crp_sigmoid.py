@@ -15,9 +15,9 @@ The sigmoid *midpoint* (`crp_midpoint`) is deliberately set below the
 hard-stop threshold (`crp_threshold`). Placing the inflection on the
 threshold (the original design) left h ≈ 0.5 at CRP=50 — i.e. the curve
 never attenuated before the cliff. With the midpoint at half the threshold
-and k calibrated accordingly, h falls from ≈0.99 (CRP=0) to ≈0.01
-(CRP=threshold): a genuine S-curve rather than a flat line truncated by a
-cliff.
+and k calibrated accordingly, h falls from ≈0.99 (CRP=0) to ≈0.01 just
+below the threshold: a genuine S-curve rather than a flat line truncated
+by a cliff.
 """
 
 from __future__ import annotations
@@ -28,9 +28,9 @@ import numpy as np
 CRP_THRESHOLD_DEFAULT = 50.0
 # Midpoint of the attenuation curve (mg/dL). Half the threshold by default.
 CRP_MIDPOINT_DEFAULT = CRP_THRESHOLD_DEFAULT / 2.0
-# Steepness calibrated so h(threshold) ≈ 0.01 with the default midpoint.
+# Steepness calibrated so h approaches 0.01 as CRP nears the threshold.
 # h(t) = 1/(1+exp(k*(t-m))) ≈ 0.01  =>  k*(t-m) ≈ ln(99) ≈ 4.595
-# k ≈ 4.595 / (50 - 25) ≈ 0.184
+# k ≈ 4.595 / (50 - 25) ≈ 0.184, rounded to 0.18
 K_DEFAULT = 0.18
 
 
@@ -71,17 +71,22 @@ def h_hormonal_attenuation(
         If inputs are non-physical (negative CRP, non-positive threshold,
         midpoint not in (0, threshold), k <= 0).
     """
+    if not np.isfinite(crp_value):
+        raise ValueError(f"crp_value must be finite (got {crp_value})")
     if crp_value < 0:
         raise ValueError(f"crp_value must be >= 0 (got {crp_value})")
-    if crp_threshold <= 0:
-        raise ValueError(f"crp_threshold must be > 0 (got {crp_threshold})")
-    if not 0 < crp_midpoint < crp_threshold:
+    if not np.isfinite(crp_threshold) or crp_threshold <= 0:
         raise ValueError(
-            f"crp_midpoint must lie in (0, crp_threshold); got "
+            f"crp_threshold must be a positive finite number "
+            f"(got {crp_threshold})"
+        )
+    if not np.isfinite(crp_midpoint) or not 0 < crp_midpoint < crp_threshold:
+        raise ValueError(
+            f"crp_midpoint must be a finite value in (0, crp_threshold); got "
             f"midpoint={crp_midpoint}, threshold={crp_threshold}"
         )
-    if k <= 0:
-        raise ValueError(f"k must be > 0 (got {k})")
+    if not np.isfinite(k) or k <= 0:
+        raise ValueError(f"k must be a positive finite number (got {k})")
 
     # Hard Stop at the boundary (>=, conservative on a safety threshold).
     if crp_value >= crp_threshold:

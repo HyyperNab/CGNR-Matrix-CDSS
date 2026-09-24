@@ -81,6 +81,14 @@ class TestSigmoid:
         with pytest.raises(ValueError):
             h_hormonal_attenuation(10.0, crp_threshold=0)
 
+    def test_nan_crp_raises(self):
+        with pytest.raises(ValueError):
+            h_hormonal_attenuation(float("nan"))
+
+    def test_inf_crp_raises(self):
+        with pytest.raises(ValueError):
+            h_hormonal_attenuation(float("inf"))
+
 
 # ------------------------------------------------------------------
 # Gate 1
@@ -134,6 +142,14 @@ class TestGate2:
         with pytest.raises(ValueError):
             gate_2_residual_norm(85.0, sigma=-1)
 
+    def test_nan_corcondia_raises(self):
+        with pytest.raises(ValueError):
+            gate_2_residual_norm(float("nan"))
+
+    def test_inf_corcondia_raises(self):
+        with pytest.raises(ValueError):
+            gate_2_residual_norm(float("inf"))
+
 
 # ------------------------------------------------------------------
 # Gate 3
@@ -177,6 +193,15 @@ class TestGate3:
         with pytest.raises(HardStop):
             gate_3_zero_veto(f, [0.5] * N_INTERVENTIONS, tier3_refusals=2)
 
+    def test_nan_compliance_raises(self):
+        f = [1, 1, 1, 1, float("nan"), 1, 1, 1, 1]
+        with pytest.raises(ValueError):
+            gate_3_zero_veto(f, [0.5] * N_INTERVENTIONS)
+
+    def test_nan_evidence_raises(self):
+        with pytest.raises(ValueError):
+            gate_3_zero_veto([1] * N_INTERVENTIONS, [0.5, float("nan")] + [0.5] * 7)
+
 
 # ------------------------------------------------------------------
 # Safeguards (audit M3)
@@ -211,6 +236,14 @@ class TestSafeguards:
         # negative clipped to 0, then Laplace replaces 0 with eps
         assert out[0] == pytest.approx(1e-6)
         assert out[1] == 0.5
+
+    def test_nan_input_raises(self):
+        with pytest.raises(ValueError):
+            apply_safeguards([float("nan"), 0.5])
+
+    def test_inf_input_raises(self):
+        with pytest.raises(ValueError):
+            apply_safeguards([float("inf"), 0.5])
 
 
 # ------------------------------------------------------------------

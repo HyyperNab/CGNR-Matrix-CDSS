@@ -17,7 +17,7 @@ v2.0.0 — Engineering audit (see AUDIT.md):
   * Gate 1 now invokes the CRP sigmoid (previously dead code).
   * Gate 2 reimplemented as an honest one-sided 3sigma lower bound.
   * apply_safeguards Laplace step no longer breaks the CLIP[0,1] invariant.
-  * Pipeline re-raises structured incidents instead of print/None.
+  * Pipeline returns structured incidents instead of print/None.
   * Boundary comparisons use >= on safety thresholds.
 """
 
@@ -146,8 +146,17 @@ def gate_2_residual_norm(
     ValueError
         If parameters are non-physical.
     """
-    if mu_corcondia <= 0 or sigma <= 0:
-        raise ValueError("mu_corcondia and sigma must be > 0")
+    if not np.isfinite(corcondia_value):
+        raise ValueError(f"corcondia_value must be finite (got {corcondia_value})")
+    if not np.isfinite(mu_corcondia) or mu_corcondia <= 0:
+        raise ValueError(
+            f"mu_corcondia must be a positive finite number "
+            f"(got {mu_corcondia})"
+        )
+    if not np.isfinite(sigma) or sigma <= 0:
+        raise ValueError(
+            f"sigma must be a positive finite number (got {sigma})"
+        )
     lower_limit = mu_corcondia - 3.0 * sigma
     if corcondia_value < lower_limit:
         raise RankFailure(
@@ -200,6 +209,10 @@ def gate_3_zero_veto(
         raise ValueError(
             f"expected length-{n} vectors; got f={f.shape}, e_b={e_b.shape}"
         )
+    if not np.all(np.isfinite(f)):
+        raise ValueError("compliance vector f contains NaN or Inf")
+    if not np.all(np.isfinite(e_b)):
+        raise ValueError("evidence scores contain NaN or Inf")
     if np.any(f < 0.0) or np.any(f > 1.0):
         raise ValueError("compliance vector f must lie in [0, 1]")
     if np.any(e_b < 0.0):
@@ -241,8 +254,10 @@ def apply_safeguards(
     numpy.ndarray
         Safeguarded vector in [0, 1].
     """
-    if laplace_eps <= 0 or laplace_eps >= 1:
-        raise ValueError("laplace_eps must lie in (0, 1)")
+    if not np.all(np.isfinite(np.asarray(e_b_vector, dtype=float))):
+        raise ValueError("e_b_vector contains NaN or Inf")
+    if not np.isfinite(laplace_eps) or laplace_eps <= 0 or laplace_eps >= 1:
+        raise ValueError("laplace_eps must be a finite value in (0, 1)")
 
     v = np.clip(np.asarray(e_b_vector, dtype=float), 0.0, 1.0)
     # Laplace zero-guard: replace zeros in-place, then re-clip so the
@@ -260,6 +275,7 @@ def run_cgnr_pipeline(
     compliance_f: Sequence[float],
     raw_scores: Sequence[float],
     *,
+    k: float = K_DEFAULT,
     crp_midpoint: float = CRP_MIDPOINT_DEFAULT,
     crp_threshold: float = CRP_THRESHOLD_DEFAULT,
     mu_corcondia: float = 85.0,
@@ -278,6 +294,7 @@ def run_cgnr_pipeline(
         # Stage 1 — Dynamic floor (real CRP sigmoid, no longer bypassed).
         h = gate_1_dynamic_floor(
             patient_crp,
+            k=k,
             crp_midpoint=crp_midpoint,
             crp_threshold=crp_threshold,
         )
