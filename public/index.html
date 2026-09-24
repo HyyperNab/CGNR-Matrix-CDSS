@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGNR Matrix CDSS — Clinical Decision Support</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --text-bright: #f0f6fc;
+  --green: #3fb950;
+  --green-bg: #0d2818;
+  --red: #f85149;
+  --red-bg: #2d0d0d;
+  --blue: #58a6ff;
+  --orange: #d29922;
+  --mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: var(--text-bright);
+  font-weight: 700;
+}
+
+header .subtitle {
+  color: var(--text);
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  opacity: 0.7;
+}
+
+header .badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.badge.green { color: var(--green); border-color: var(--green); }
+.badge.blue { color: var(--blue); border-color: var(--blue); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card h2 {
+  font-size: 1rem;
+  color: var(--text-bright);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  opacity: 0.6;
+  margin-bottom: 0.4rem;
+}
+
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.input-group input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  color: var(--text-bright);
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-group input:focus {
+  border-color: var(--blue);
+}
+
+.vector-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.vector-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vector-cell .idx {
+  font-size: 0.6rem;
+  color: var(--text);
+  opacity: 0.4;
+  margin-bottom: 0.2rem;
+}
+
+.vector-cell input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.35rem 0.2rem;
+  color: var(--text-bright);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  text-align: center;
+  outline: none;
+}
+
+.vector-cell input:focus {
+  border-color: var(--blue);
+}
+
+.vector-cell input.refused {
+  border-color: var(--red);
+  background: var(--red-bg);
+}
+
+.btn-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+button {
+  background: var(--blue);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+button:hover { opacity: 0.85; }
+
+button.secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Results */
+.result-card {
+  display: none;
+}
+
+.result-card.visible {
+  display: block;
+}
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.status-banner.green {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.status-banner.red {
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.result-item {
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 0.8rem;
+}
+
+.result-item .label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 0.2rem;
+}
+
+.result-item .value {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  color: var(--text-bright);
+}
+
+.scores-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 120px;
+  padding-top: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.bar {
+  flex: 1;
+  background: var(--blue);
+  border-radius: 3px 3px 0 0;
+  position: relative;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+.bar.vetoed {
+  background: var(--red);
+  opacity: 0.5;
+}
+
+.bar .bar-label {
+  position: absolute;
+  bottom: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  color: var(--text);
+  opacity: 0.4;
+}
+
+.bar .bar-value {
+  position: absolute;
+  top: -1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+.json-output {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.scenarios {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+
+.scenario-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.scenario-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.7rem;
+  color: var(--text);
+  opacity: 0.4;
+}
+
+@media (max-width: 600px) {
+  .input-row { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  .vector-grid { grid-template-columns: repeat(9, 1fr); gap: 0.2rem; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>🧬 CGNR Matrix CDSS</h1>
+  <div class="subtitle">Constraint-Grounded Nutritional Recovery — Clinical Decision Support System</div>
+  <div class="badges">
+    <span class="badge green">3 Safety Gates</span>
+    <span class="badge blue">n=9 Interventions</span>
+    <span class="badge">SOC-29</span>
+    <span class="badge">v2.1.0</span>
+  </div>
+</header>
+
+<!-- Input Card -->
+<div class="card">
+  <h2>📋 Patient Input</h2>
+
+  <div class="input-row">
+    <div class="input-group">
+      <label>Serum CRP (mg/dL)</label>
+      <input type="number" id="crp" value="12.0" step="0.1" min="0">
+    </div>
+    <div class="input-group">
+      <label>CORCONDIA (%)</label>
+      <input type="number" id="corcondia" value="88.5" step="0.1" min="0">
+    </div>
+  </div>
+
+  <div class="section-label">Evidence Scores E(B) — 9 interventions</div>
+  <div class="vector-grid" id="scores-grid"></div>
+
+  <div class="section-label" style="margin-top:1rem;">Compliance Vector f ∈ [0,1]⁹ — 0 = refused</div>
+  <div class="vector-grid" id="compliance-grid"></div>
+
+  <div class="scenarios">
+    <button class="scenario-btn" onclick="loadScenario('normal')">🟢 Normal</button>
+    <button class="scenario-btn" onclick="loadScenario('sepsis')">🔴 Sepsis</button>
+    <button class="scenario-btn" onclick="loadScenario('rank')">🔴 Rank Corruption</button>
+    <button class="scenario-btn" onclick="loadScenario('abandon')">🔴 Tier 3 Escalation</button>
+  </div>
+
+  <div class="btn-row">
+    <button onclick="evaluate()">⚡ Evaluate Pipeline</button>
+    <button class="secondary" onclick="resetForm()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- Result Card -->
+<div class="card result-card" id="result-card">
+  <h2>📊 Pipeline Result</h2>
+  <div id="result-content"></div>
+</div>
+
+<footer>
+  CGNR Matrix CDSS v2.1.0 · MIT License · Research prototype, not a medical device
+</footer>
+
+</div>
+
+<script>
+const N = 9;
+const defaultScores = [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77];
+const defaultCompliance = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+const scenarios = {
+  normal: {
+    crp: 12.0, corcondia: 88.5,
+    scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
+    compliance: [1, 1, 1, 1, 1, 1, 0, 1, 1],
+  },
+  sepsis: {
+    crp: 55.0, corcondia: 88.5,
+    scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
+    compliance: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  },
+  rank: {
+    crp: 12.0, corcondia: 45.0,
+    scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
+    compliance: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  },
+  abandon: {
+    crp: 12.0, corcondia: 88.5,
+    scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
+    compliance: [0, 0, 0, 0, 0, 1, 1, 1, 1],
+  },
+};
+
+function buildGrid(id, values) {
+  const grid = document.getElementById(id);
+  grid.innerHTML = '';
+  for (let i = 0; i < N; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'vector-cell';
+    const idx = document.createElement('div');
+    idx.className = 'idx';
+    idx.textContent = '#' + (i + 1);
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.value = values[i];
+    input.step = '0.01';
+    input.min = '0';
+    input.dataset.idx = i;
+    input.dataset.grid = id;
+    if (id === 'compliance-grid' && values[i] === 0) {
+      input.classList.add('refused');
+    }
+    input.addEventListener('input', function() {
+      if (id === 'compliance-grid') {
+        if (parseFloat(this.value) === 0) this.classList.add('refused');
+        else this.classList.remove('refused');
+      }
+    });
+    cell.appendChild(idx);
+    cell.appendChild(input);
+    grid.appendChild(cell);
+  }
+}
+
+function getVector(id) {
+  const inputs = document.querySelectorAll('#' + id + ' input');
+  return Array.from(inputs).map(i => parseFloat(i.value) || 0);
+}
+
+function loadScenario(name) {
+  const s = scenarios[name];
+  document.getElementById('crp').value = s.crp;
+  document.getElementById('corcondia').value = s.corcondia;
+  buildGrid('scores-grid', s.scores);
+  buildGrid('compliance-grid', s.compliance);
+  document.getElementById('result-card').classList.remove('visible');
+}
+
+function resetForm() {
+  document.getElementById('crp').value = 12.0;
+  document.getElementById('corcondia').value = 88.5;
+  buildGrid('scores-grid', defaultScores);
+  buildGrid('compliance-grid', defaultCompliance);
+  document.getElementById('result-card').classList.remove('visible');
+}
+
+async function evaluate() {
+  const crp = parseFloat(document.getElementById('crp').value);
+  const corcondia = parseFloat(document.getElementById('corcondia').value);
+  const scores = getVector('scores-grid');
+  const compliance = getVector('compliance-grid');
+
+  const body = { crp, corcondia, scores, compliance };
+
+  const card = document.getElementById('result-card');
+  const content = document.getElementById('result-content');
+  card.classList.add('visible');
+  content.innerHTML = '<div style="text-align:center;padding:1rem;opacity:0.5;">Evaluating...</div>';
+
+  try {
+    const res = await fetch('/api/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      content.innerHTML = '<div class="status-banner red"><span class="status-dot"></span>Error: ' + data.error + '</div>';
+      return;
+    }
+
+    renderResult(data, compliance);
+  } catch (err) {
+    content.innerHTML = '<div class="status-banner red"><span class="status-dot"></span>Request failed: ' + err.message + '</div>';
+  }
+}
+
+function renderResult(data, compliance) {
+  const content = document.getElementById('result-content');
+  const isGreen = data.flag === 'GREEN';
+
+  let html = '';
+
+  // Status banner
+  html += '<div class="status-banner ' + (isGreen ? 'green' : 'red') + '">';
+  html += '<span class="status-dot"></span>';
+  html += isGreen ? 'GREEN — Pipeline passed all safety gates' : 'RED — ' + (data.incident?.gate_id || 'BLOCKED');
+  html += '</div>';
+
+  if (isGreen) {
+    // Key metrics
+    html += '<div class="result-grid">';
+    html += '<div class="result-item"><div class="label">h_hormonal</div><div class="value">' + data.h_hormonal.toFixed(4) + '</div></div>';
+    html += '<div class="result-item"><div class="label">Status</div><div class="value" style="color:var(--green)">' + data.flag + '</div></div>';
+    html += '</div>';
+
+    // Bar chart
+    html += '<div class="section-label">Gated Evidence Scores</div>';
+    html += '<div class="scores-bar-chart">';
+    data.scores.forEach((s, i) => {
+      const heightPct = Math.max(s * 100, 2);
+      const vetoed = compliance[i] === 0;
+      html += '<div class="bar' + (vetoed ? ' vetoed' : '') + '" style="height:' + heightPct + '%">';
+      html += '<span class="bar-value">' + s.toFixed(2) + '</span>';
+      html += '<span class="bar-label">#' + (i+1) + '</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:1.5rem"></div>';
+  } else {
+    // Incident details
+    html += '<div class="result-grid">';
+    html += '<div class="result-item"><div class="label">Gate</div><div class="value" style="color:var(--red)">' + (data.incident?.gate_id || '?') + '</div></div>';
+    html += '<div class="result-item"><div class="label">Status</div><div class="value" style="color:var(--red)">' + data.flag + '</div></div>';
+    html += '</div>';
+    html += '<div class="result-item" style="margin-bottom:1rem"><div class="label">Reason</div><div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-bright);margin-top:0.2rem">' + (data.incident?.reason || 'Unknown') + '</div></div>';
+  }
+
+  // JSON output
+  html += '<div class="section-label">Raw JSON</div>';
+  html += '<div class="json-output">' + JSON.stringify(data, null, 2) + '</div>';
+
+  content.innerHTML = html;
+}
+
+// Init
+buildGrid('scores-grid', defaultScores);
+buildGrid('compliance-grid', defaultCompliance);
+</script>
+</body>
+</html>

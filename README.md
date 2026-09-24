@@ -9,6 +9,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Version](https://img.shields.io/badge/version-v2.0.0-teal.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS)
 [![Status](https://img.shields.io/badge/status-logic%20locked-red.svg)](REPOSITORY_LOCK.md)
+[![Live Demo](https://img.shields.io/badge/demo-live%20on%20Vercel-black.svg)](https://cgnr-matrix-cdss.vercel.app)
 [![Tests](https://img.shields.io/badge/pytest-57%20passing-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -38,6 +39,17 @@ Post-gastrectomy patients face catabolic crisis, hormonal disruption, and nutrit
 **After**: Three deterministic gates intercept each failure mode. The pipeline either returns a clean, safeguarded evidence vector — or it Hard Stops with a structured SOC-29 incident record. No silent failures.
 
 ---
+
+## 🌐 Live Demo
+
+A live webapp is deployed on Vercel — try all four scenarios interactively:
+
+**[cgnr-matrix-cdss.vercel.app →](https://cgnr-matrix-cdss.vercel.app)**
+
+- 🟢 Normal patient (GREEN pipeline)
+- 🔴 Sepsis Hard Stop (Gate 1)
+- 🔴 Rank corruption (Gate 2)
+- 🔴 Tier 3 escalation (Gate 3)
 
 ## 🚀 Quick Start
 
@@ -202,6 +214,10 @@ logic/
 cgnr/
   __init__.py             CLI package marker
   __main__.py             CLI: evaluate, gate1, gate2, curve (JSON output)
+api/
+  evaluate.py             Vercel serverless function (pipeline API)
+public/
+  index.html              Webapp frontend (dark clinical UI)
 audit/
   spof_matrix_29.csv      32-entry SPOF audit matrix (3 P0-* + 29 S-*)
 docs/
@@ -214,6 +230,8 @@ tests/
 .github/workflows/
   ci.yml                  CI pipeline (ruff lint+format → mypy → pytest, 3.10/3.11/3.12)
 demo.py                   4-scenario demo (GREEN + 3 RED paths)
+vercel.json              Vercel deployment config
+runtime.txt              Vercel Python runtime pin
 .gitignore
 pyproject.toml            Packaging + tool config (ruff, mypy, pytest)
 requirements.txt          Runtime dependencies
