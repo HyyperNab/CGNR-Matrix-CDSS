@@ -127,7 +127,11 @@ def plot_attenuation_curve(
 
 
 if __name__ == "__main__":
-    print(f"threshold={CRP_THRESHOLD_DEFAULT}  midpoint={CRP_MIDPOINT_DEFAULT}  k={K_DEFAULT}")
+    print(
+        f"threshold={CRP_THRESHOLD_DEFAULT}"
+        f"  midpoint={CRP_MIDPOINT_DEFAULT}"
+        f"  k={K_DEFAULT}"
+    )
     for crp in [0, 10, 20, 25, 30, 40, 45, 50, 55, 80]:
         h, status = h_hormonal_attenuation(crp)
         print(f"CRP={crp:3d} mg/dL  ->  h={h:.4f}  [{status}]")

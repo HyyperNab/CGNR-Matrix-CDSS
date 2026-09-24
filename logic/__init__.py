@@ -2,9 +2,9 @@
 
 from .crp_sigmoid import h_hormonal_attenuation
 from .hil_gates import (
+    N_INTERVENTIONS,
     HardStop,
     Incident,
-    N_INTERVENTIONS,
     PipelineResult,
     RankFailure,
     apply_safeguards,
@@ -15,17 +15,17 @@ from .hil_gates import (
 )
 
 __all__ = [
-    "h_hormonal_attenuation",
+    "N_INTERVENTIONS",
+    "HardStop",
+    "Incident",
+    "PipelineResult",
+    "RankFailure",
+    "apply_safeguards",
     "gate_1_dynamic_floor",
     "gate_2_residual_norm",
     "gate_3_zero_veto",
-    "apply_safeguards",
+    "h_hormonal_attenuation",
     "run_cgnr_pipeline",
-    "HardStop",
-    "RankFailure",
-    "Incident",
-    "PipelineResult",
-    "N_INTERVENTIONS",
 ]
 
 __version__ = "2.0.0"

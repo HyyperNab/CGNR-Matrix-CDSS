@@ -23,8 +23,8 @@ v2.0.0 — Engineering audit (see AUDIT.md):
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Sequence
+from collections.abc import Sequence
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -313,7 +313,7 @@ if __name__ == "__main__":
         raw_scores=test_scores,
     )
 
-    if result.ok:
+    if result.ok and result.scores is not None:
         print(f"Status: {result.flag}  h_hormonal={result.h_hormonal:.4f}")
         print(f"Gated evidence scores (n={N_INTERVENTIONS}):")
         print(np.round(result.scores, 4))
