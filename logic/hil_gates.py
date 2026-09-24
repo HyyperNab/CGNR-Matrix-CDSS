@@ -1,6 +1,6 @@
 """
 CGNR Matrix — Human-in-the-Loop (HIL) Logic Gates
-Version: 2.0.0
+Version: 2.1.0
 Author: N. Ktari
 License: MIT
 
@@ -41,8 +41,9 @@ N_INTERVENTIONS = 9
 class HardStop(Exception):
     """Clinical safety boundary violation (SOC-29)."""
 
-    def __init__(self, gate_id: str, reason: str,
-                 message: str = "Clinical output blocked"):
+    def __init__(
+        self, gate_id: str, reason: str, message: str = "Clinical output blocked"
+    ):
         self.gate_id = gate_id
         self.reason = reason
         super().__init__(f"[{gate_id}] {reason}: {message}")
@@ -55,6 +56,7 @@ class RankFailure(Exception):
 @dataclass
 class Incident:
     """Structured record of a blocked pipeline run (SOC-29 audit trail)."""
+
     gate_id: str
     reason: str
     flag: str = "RED"
@@ -63,6 +65,7 @@ class Incident:
 @dataclass
 class PipelineResult:
     """Outcome of a pipeline run."""
+
     flag: str
     scores: np.ndarray | None = None
     h_hormonal: float | None = None
@@ -150,13 +153,10 @@ def gate_2_residual_norm(
         raise ValueError(f"corcondia_value must be finite (got {corcondia_value})")
     if not np.isfinite(mu_corcondia) or mu_corcondia <= 0:
         raise ValueError(
-            f"mu_corcondia must be a positive finite number "
-            f"(got {mu_corcondia})"
+            f"mu_corcondia must be a positive finite number (got {mu_corcondia})"
         )
     if not np.isfinite(sigma) or sigma <= 0:
-        raise ValueError(
-            f"sigma must be a positive finite number (got {sigma})"
-        )
+        raise ValueError(f"sigma must be a positive finite number (got {sigma})")
     lower_limit = mu_corcondia - 3.0 * sigma
     if corcondia_value < lower_limit:
         raise RankFailure(
@@ -308,31 +308,9 @@ def run_cgnr_pipeline(
         # Final — CLIP + Laplace safeguards.
         final_output = apply_safeguards(gated_scores)
 
-        return PipelineResult(flag="GREEN", scores=final_output,
-                              h_hormonal=h)
+        return PipelineResult(flag="GREEN", scores=final_output, h_hormonal=h)
 
     except (HardStop, RankFailure) as exc:
         gate = getattr(exc, "gate_id", "GATE_2")
         incident = Incident(gate_id=gate, reason=str(exc))
         return PipelineResult(flag="RED", incident=incident)
-
-
-if __name__ == "__main__":
-    # TEST: patient refusing intervention #7 (e.g. vegan refusing MCT).
-    test_f = [1, 1, 1, 1, 1, 1, 0, 1, 1]
-    test_scores = [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77]
-
-    print("--- CGNR Matrix Pipeline Validation ---")
-    result = run_cgnr_pipeline(
-        patient_crp=12.0,
-        corcondia=88.5,
-        compliance_f=test_f,
-        raw_scores=test_scores,
-    )
-
-    if result.ok and result.scores is not None:
-        print(f"Status: {result.flag}  h_hormonal={result.h_hormonal:.4f}")
-        print(f"Gated evidence scores (n={N_INTERVENTIONS}):")
-        print(np.round(result.scores, 4))
-    else:
-        print(f"Status: {result.flag}  incident: {result.incident}")

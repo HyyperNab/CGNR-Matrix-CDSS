@@ -14,14 +14,20 @@ pip install -e ".[dev]"
 ## Run
 
 ```bash
-# Test suite (48 tests, 90% coverage)
+# Test suite (57 tests, 100% coverage)
 python -m pytest -v
 
-# Demo: pipeline + Gate 1 attenuation table
+# Demo: 4 scenarios (GREEN + 3 RED paths)
 python demo.py
 
-# Lint + type-check
-ruff check logic/ tests/ demo.py
+# CLI: structured JSON output
+python -m cgnr evaluate --crp 12 --corcondia 88.5 \
+    --scores 0.85 0.90 0.45 0.70 0.82 0.61 0.95 0.52 0.77 \
+    --compliance 1 1 1 1 1 1 0 1 1
+
+# Lint + format + type-check
+ruff check logic/ tests/ demo.py cgnr/
+ruff format --check logic/ tests/ demo.py cgnr/
 mypy logic/ --ignore-missing-imports
 ```
 
@@ -32,7 +38,8 @@ mypy logic/ --ignore-missing-imports
 - **CLIP[0,1] + Laplace zero-guard** safeguards
 - **Structured Incident records** on every blocked run (SOC-29 audit trail)
 - **NaN/Inf rejection** on all input paths
-- **48-test regression suite** with 90% coverage
+- **CLI** with JSON output and structured logging (`python -m cgnr`)
+- **57-test regression suite** with 100% coverage
 
 ## API
 

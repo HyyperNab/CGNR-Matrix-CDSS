@@ -77,8 +77,7 @@ def h_hormonal_attenuation(
         raise ValueError(f"crp_value must be >= 0 (got {crp_value})")
     if not np.isfinite(crp_threshold) or crp_threshold <= 0:
         raise ValueError(
-            f"crp_threshold must be a positive finite number "
-            f"(got {crp_threshold})"
+            f"crp_threshold must be a positive finite number (got {crp_threshold})"
         )
     if not np.isfinite(crp_midpoint) or not 0 < crp_midpoint < crp_threshold:
         raise ValueError(
@@ -109,17 +108,35 @@ def plot_attenuation_curve(
     import matplotlib.pyplot as plt
 
     crp_range = np.linspace(0, crp_threshold * 2, 400)
-    h_values = [h_hormonal_attenuation(c, k, crp_midpoint, crp_threshold)[0]
-                for c in crp_range]
+    h_values = [
+        h_hormonal_attenuation(c, k, crp_midpoint, crp_threshold)[0] for c in crp_range
+    ]
 
     plt.figure(figsize=(10, 5))
     plt.plot(crp_range, h_values, "b-", linewidth=2, label="h_hormonal")
-    plt.axvline(x=crp_threshold, color="red", linestyle="--", alpha=0.7,
-                label=f"CRP = {crp_threshold:.0f} (Hard Stop)")
-    plt.axvline(x=crp_midpoint, color="orange", linestyle=":", alpha=0.6,
-                label=f"midpoint = {crp_midpoint:.0f}")
-    plt.fill_between(crp_range, 0, 1, where=(crp_range >= crp_threshold),
-                     color="red", alpha=0.1, label="Hard Stop zone")
+    plt.axvline(
+        x=crp_threshold,
+        color="red",
+        linestyle="--",
+        alpha=0.7,
+        label=f"CRP = {crp_threshold:.0f} (Hard Stop)",
+    )
+    plt.axvline(
+        x=crp_midpoint,
+        color="orange",
+        linestyle=":",
+        alpha=0.6,
+        label=f"midpoint = {crp_midpoint:.0f}",
+    )
+    plt.fill_between(
+        crp_range,
+        0,
+        1,
+        where=(crp_range >= crp_threshold),
+        color="red",
+        alpha=0.1,
+        label="Hard Stop zone",
+    )
     plt.xlabel("Serum CRP (mg/dL)")
     plt.ylabel("h_hormonal")
     plt.title("Gate 1: CRP-Dependent Hormonal Attenuation")
@@ -129,14 +146,3 @@ def plot_attenuation_curve(
     if savepath:
         plt.savefig(savepath, dpi=150)
     plt.show()
-
-
-if __name__ == "__main__":
-    print(
-        f"threshold={CRP_THRESHOLD_DEFAULT}"
-        f"  midpoint={CRP_MIDPOINT_DEFAULT}"
-        f"  k={K_DEFAULT}"
-    )
-    for crp in [0, 10, 20, 25, 30, 40, 45, 50, 55, 80]:
-        h, status = h_hormonal_attenuation(crp)
-        print(f"CRP={crp:3d} mg/dL  ->  h={h:.4f}  [{status}]")

@@ -9,8 +9,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Version](https://img.shields.io/badge/version-v2.0.0-teal.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS)
 [![Status](https://img.shields.io/badge/status-logic%20locked-red.svg)](REPOSITORY_LOCK.md)
-[![Tests](https://img.shields.io/badge/pytest-48%20passing-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/pytest-57%20passing-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HyyperNab/CGNR-Matrix-CDSS/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
@@ -45,11 +45,16 @@ Post-gastrectomy patients face catabolic crisis, hormonal disruption, and nutrit
 # Install (runtime + dev dependencies)
 pip install -e ".[dev]"
 
-# Run the test suite (48 tests, 90% coverage)
+# Run the test suite (57 tests, 100% coverage)
 python -m pytest -v
 
-# Demo: pipeline + attenuation curve
+# Demo: 4 scenarios (GREEN + 3 RED paths)
 python demo.py
+
+# CLI: structured JSON output
+python -m cgnr evaluate --crp 12 --corcondia 88.5 \
+    --scores 0.85 0.90 0.45 0.70 0.82 0.61 0.95 0.52 0.77 \
+    --compliance 1 1 1 1 1 1 0 1 1
 ```
 
 ### Example
@@ -112,7 +117,7 @@ Patient Input (CRP, CORCONDIA, compliance f∈[0,1]⁹, evidence scores)
   RED   → structured Incident (SOC-29 audit trail)
 ```
 
-**3 logic modules** · **9 interventions** · **32-entry SPOF matrix** · **3 deterministic gates** · **0 probabilistic fallbacks**
+**3 logic modules** · **9 interventions** · **32-entry SPOF matrix** · **3 deterministic gates** · **0 probabilistic fallbacks** · **100% test coverage**
 
 ---
 
@@ -158,7 +163,8 @@ See [`REPOSITORY_LOCK.md`](REPOSITORY_LOCK.md).
 | **No dead code** | Gate 1 sigmoid is invoked by the pipeline (verified by tests) |
 | **Full audit trail** | Every blocked run returns a structured `Incident` record |
 | **Reproducible builds** | `pyproject.toml` pins Python ≥3.10, deps in `requirements.txt` |
-| **CI-enforced** | ruff + mypy + pytest with 85% coverage gate on every push |
+| **CI-enforced** | ruff lint + format + mypy + pytest with 90% coverage gate |
+| **CLI interface** | `python -m cgnr` with JSON output and structured logging |
 
 ---
 
@@ -193,6 +199,9 @@ logic/
   __init__.py             Package exports, __version__
   crp_sigmoid.py          Gate 1 — CRP hormonal attenuation sigmoid
   hil_gates.py            Gates 1–3, safeguards, pipeline, incident records
+cgnr/
+  __init__.py             CLI package marker
+  __main__.py             CLI: evaluate, gate1, gate2, curve (JSON output)
 audit/
   spof_matrix_29.csv      32-entry SPOF audit matrix (3 P0-* + 29 S-*)
 docs/
@@ -200,15 +209,18 @@ docs/
   GATE_SPECIFICATION.md   Mathematical specification of each gate
   MATH_VALIDATION.md      Numerical verification of all math claims
 tests/
-  test_cgnr_logic.py      48 tests, 90% coverage
+  test_cgnr_logic.py      48 logic tests (sigmoid, gates, safeguards, pipeline)
+  test_cli.py             9 CLI tests (evaluate, gate1, gate2, curve)
 .github/workflows/
-  ci.yml                  CI pipeline (ruff → mypy → pytest, Python 3.10/3.11/3.12)
-demo.py                   Pipeline demo + attenuation table
+  ci.yml                  CI pipeline (ruff lint+format → mypy → pytest, 3.10/3.11/3.12)
+demo.py                   4-scenario demo (GREEN + 3 RED paths)
 .gitignore
 pyproject.toml            Packaging + tool config (ruff, mypy, pytest)
 requirements.txt          Runtime dependencies
 REPOSITORY_LOCK.md        Logic-lock governance document
 QUICK_START.md            Quick start guide
+CHANGELOG.md              Versioned changelog (Keep a Changelog format)
+CONTRIBUTING.md           Contribution guide for safety-critical changes
 AUDIT.md                  Engineering audit report
 NOTES.md                  Deferred solver-layer items
 LICENSE                   MIT

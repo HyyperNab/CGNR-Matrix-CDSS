@@ -28,7 +28,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Lint (ruff)
-        run: ruff check logic/ tests/
+        run: ruff check logic/ tests/ demo.py cgnr/
+
+      - name: Format check (ruff)
+        run: ruff format --check logic/ tests/ demo.py cgnr/
 
       - name: Type-check (mypy)
         run: mypy logic/ --ignore-missing-imports

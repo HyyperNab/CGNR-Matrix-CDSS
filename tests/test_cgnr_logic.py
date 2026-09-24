@@ -175,8 +175,9 @@ class TestGate3:
 
     def test_out_of_range_compliance_raises(self):
         with pytest.raises(ValueError):
-            gate_3_zero_veto([1.5] + [1] * (N_INTERVENTIONS - 1),
-                             [0.5] * N_INTERVENTIONS)
+            gate_3_zero_veto(
+                [1.5] + [1] * (N_INTERVENTIONS - 1), [0.5] * N_INTERVENTIONS
+            )
 
     def test_negative_evidence_raises(self):
         with pytest.raises(ValueError):
@@ -261,15 +262,17 @@ class TestPipeline:
         assert r.h_hormonal is not None
 
     def test_sepsis_blocks(self):
-        r = run_cgnr_pipeline(55.0, 88.5, [1] * N_INTERVENTIONS,
-                              [0.5] * N_INTERVENTIONS)
+        r = run_cgnr_pipeline(
+            55.0, 88.5, [1] * N_INTERVENTIONS, [0.5] * N_INTERVENTIONS
+        )
         assert not r.ok
         assert r.incident is not None
         assert r.incident.gate_id == "GATE_1"
 
     def test_rank_failure_blocks(self):
-        r = run_cgnr_pipeline(12.0, 50.0, [1] * N_INTERVENTIONS,
-                              [0.5] * N_INTERVENTIONS)
+        r = run_cgnr_pipeline(
+            12.0, 50.0, [1] * N_INTERVENTIONS, [0.5] * N_INTERVENTIONS
+        )
         assert not r.ok
         assert r.incident.gate_id == "GATE_2"
 
@@ -280,23 +283,30 @@ class TestPipeline:
         assert r.incident.gate_id == "GATE_3"
 
     def test_all_refused_blocks(self):
-        r = run_cgnr_pipeline(12.0, 88.5, [0] * N_INTERVENTIONS,
-                              [0.5] * N_INTERVENTIONS)
+        r = run_cgnr_pipeline(
+            12.0, 88.5, [0] * N_INTERVENTIONS, [0.5] * N_INTERVENTIONS
+        )
         assert not r.ok
         assert r.incident.gate_id == "GATE_3"
 
     def test_low_corcondia_blocks(self):
-        r = run_cgnr_pipeline(12.0, 10.0, [1] * N_INTERVENTIONS,
-                              [0.5] * N_INTERVENTIONS)
+        r = run_cgnr_pipeline(
+            12.0, 10.0, [1] * N_INTERVENTIONS, [0.5] * N_INTERVENTIONS
+        )
         assert not r.ok
         assert r.incident.gate_id == "GATE_2"
 
     def test_custom_params(self):
         f = [1] * N_INTERVENTIONS
         r = run_cgnr_pipeline(
-            5.0, 90.0, f, [0.5] * N_INTERVENTIONS,
-            crp_midpoint=20.0, crp_threshold=40.0,
-            mu_corcondia=90.0, sigma=3.0,
+            5.0,
+            90.0,
+            f,
+            [0.5] * N_INTERVENTIONS,
+            crp_midpoint=20.0,
+            crp_threshold=40.0,
+            mu_corcondia=90.0,
+            sigma=3.0,
         )
         assert r.ok
         assert r.h_hormonal is not None
@@ -307,6 +317,7 @@ class TestPlot:
 
     def test_plot_runs(self, monkeypatch, tmp_path):
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -326,8 +337,10 @@ class TestCSVConsistency:
     def test_csv_entry_count(self):
         """3 critical (P0-*) + 29 systematic (S-*) = 32 rows."""
         import csv
-        csv_path = os.path.join(os.path.dirname(__file__),
-                                "..", "audit", "spof_matrix_29.csv")
+
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "audit", "spof_matrix_29.csv"
+        )
         with open(csv_path) as f:
             reader = list(csv.DictReader(f))
         assert len(reader) == 32
@@ -338,8 +351,10 @@ class TestCSVConsistency:
     def test_csv_dimensionality_consistent(self):
         """S-17 and S-18 must say n=9, not n=8 (audit fix L4)."""
         import csv
-        csv_path = os.path.join(os.path.dirname(__file__),
-                                "..", "audit", "spof_matrix_29.csv")
+
+        csv_path = os.path.join(
+            os.path.dirname(__file__), "..", "audit", "spof_matrix_29.csv"
+        )
         with open(csv_path) as f:
             rows = {r["ID"]: r for r in csv.DictReader(f)}
         assert "9" in rows["S-17"]["Resolution"]
