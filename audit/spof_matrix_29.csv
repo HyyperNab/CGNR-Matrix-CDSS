@@ -18,8 +18,8 @@ S-13,Solver,Backend dependency,Reproducibility,Library pinning (Tensorly 0.8),An
 S-14,Scoring,Prior p=0 collapse,E(B) erasure,"Priors constrained to (0, 1]",Annex S2
 S-15,Scoring,Conservative geometric mean,Under-weighting,MAP alignment validation,Annex S4 §7
 S-16,Scoring,Prior calibration drift,Stale evidence,Version control (v1.0),Annex S2.6
-S-17,Compliance,Binary encoding {0; 1},Loss of nuance,"f in [0, 1]^8 graded adherence",Annex S6.1
-S-18,Compliance,Refusal log missing,Audit gap,8-field structured log,Annex S6.2
+S-17,Compliance,Binary encoding {0; 1},Loss of nuance,"f in [0, 1]^9 graded adherence",Annex S6.1
+S-18,Compliance,Refusal log missing,Audit gap,9-field structured log,Annex S6.2
 S-19,Escalation,Inadequate pathways,Therapy abandonment,Three-Tier Escalation,Manual §4.2
 S-20,Escalation,Confidence flag hidden,Clinician unawareness,GREEN/YELLOW/RED dash,Manual §4.1
 S-21,Escalation,MDT alert missing,Non-viable protocol,Tier 3 auto-trigger,Annex S6.3

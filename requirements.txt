@@ -1,0 +1,6 @@
+# Runtime dependencies for the logic/ core
+numpy>=1.24
+matplotlib>=3.7   # optional: only for crp_sigmoid.plot_attenuation_curve
+
+# Test dependencies
+pytest>=7.4
