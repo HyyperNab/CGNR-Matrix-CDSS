@@ -3,20 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CGNR Matrix CDSS — Clinical Decision Support</title>
+<title>CGNR Matrix CDSS — Clinical Decision Support System</title>
 <style>
 :root {
   --bg: #0d1117;
   --surface: #161b22;
+  --surface-2: #1c2330;
   --border: #30363d;
   --text: #c9d1d9;
   --text-bright: #f0f6fc;
+  --text-dim: #8b949e;
   --green: #3fb950;
-  --green-bg: #0d2818;
+  --green-bg: rgba(63, 185, 80, 0.1);
   --red: #f85149;
-  --red-bg: #2d0d0d;
+  --red-bg: rgba(248, 81, 73, 0.1);
   --blue: #58a6ff;
+  --blue-bg: rgba(88, 166, 255, 0.1);
   --orange: #d29922;
+  --orange-bg: rgba(210, 153, 34, 0.1);
+  --purple: #bc8cff;
   --mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
 }
 
@@ -26,399 +31,659 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
-  padding: 2rem 1rem;
+  line-height: 1.6;
 }
 
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-}
+.container { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem 4rem; }
 
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-header h1 {
-  font-size: 1.8rem;
-  color: var(--text-bright);
-  font-weight: 700;
-}
-
-header .subtitle {
-  color: var(--text);
-  font-size: 0.9rem;
-  margin-top: 0.3rem;
-  opacity: 0.7;
-}
-
-header .badges {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.8rem;
-  flex-wrap: wrap;
-}
-
+/* ─── HERO ─── */
+.hero { text-align: center; margin-bottom: 3rem; }
+.hero h1 { font-size: 2rem; color: var(--text-bright); margin-bottom: 0.3rem; }
+.hero .tagline { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1rem; }
+.badges { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
 .badge {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  color: var(--text);
+  font-size: 0.72rem; padding: 0.25rem 0.7rem; border-radius: 12px;
+  border: 1px solid var(--border); color: var(--text-dim);
 }
+.badge.green { color: var(--green); border-color: rgba(63,185,80,0.4); }
+.badge.blue { color: var(--blue); border-color: rgba(88,166,255,0.4); }
+.badge.orange { color: var(--orange); border-color: rgba(210,153,34,0.4); }
+.badge.red { color: var(--red); border-color: rgba(248,81,73,0.4); }
 
-.badge.green { color: var(--green); border-color: var(--green); }
-.badge.blue { color: var(--blue); border-color: var(--blue); }
+/* ─── SECTIONS ─── */
+.section { margin-bottom: 2.5rem; }
+.section-title {
+  font-size: 1.2rem; color: var(--text-bright); font-weight: 700;
+  margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.section-subtitle { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.2rem; }
 
+/* ─── CARDS ─── */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem;
+}
+.card h3 { font-size: 0.95rem; color: var(--text-bright); margin-bottom: 0.5rem; }
+
+/* ─── CALLOUT ─── */
+.callout {
+  border-left: 3px solid var(--blue); background: var(--blue-bg);
+  padding: 0.8rem 1rem; border-radius: 0 6px 6px 0; margin: 1rem 0;
+  font-size: 0.88rem; color: var(--text);
+}
+.callout.warn { border-color: var(--orange); background: var(--orange-bg); }
+.callout.danger { border-color: var(--red); background: var(--red-bg); }
+.callout.success { border-color: var(--green); background: var(--green-bg); }
+
+/* ─── GATE CARDS ─── */
+.gate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+@media (max-width: 700px) { .gate-grid { grid-template-columns: 1fr; } }
+
+.gate-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.2rem; position: relative;
+}
+.gate-card .gate-num {
+  position: absolute; top: -0.6rem; left: 1.2rem;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.1rem 0.6rem; font-size: 0.7rem;
+  color: var(--blue); font-weight: 600;
+}
+.gate-card h4 { font-size: 0.9rem; color: var(--text-bright); margin-bottom: 0.4rem; }
+.gate-card .spof { font-size: 0.7rem; color: var(--orange); margin-bottom: 0.6rem; }
+.gate-card p { font-size: 0.82rem; color: var(--text); line-height: 1.5; }
+.gate-card .formula {
+  font-family: var(--mono); font-size: 0.78rem; color: var(--blue);
+  background: var(--bg); border-radius: 4px; padding: 0.4rem 0.6rem;
+  margin-top: 0.5rem; display: block;
 }
 
-.card h2 {
-  font-size: 1rem;
-  color: var(--text-bright);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* ─── TOOLTIP ─── */
+.tooltip-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--text-dim);
+  font-size: 0.65rem; color: var(--text-dim); cursor: help;
+  margin-left: 0.3rem; vertical-align: middle; font-weight: 700;
+  position: relative;
+}
+.tooltip-icon:hover .tooltip-content { display: block; }
+.tooltip-content {
+  display: none; position: absolute; z-index: 100; bottom: 1.5rem; left: 50%;
+  transform: translateX(-50%); width: 280px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.8rem; font-size: 0.78rem;
+  color: var(--text); font-weight: 400; line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+.tooltip-content strong { color: var(--text-bright); }
+.tooltip-content::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%); border: 5px solid transparent;
+  border-top-color: var(--surface-2);
 }
 
-.section-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text);
-  opacity: 0.6;
-  margin-bottom: 0.4rem;
-}
+/* ─── INPUT FIELDS ─── */
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } }
 
-.input-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.input-group label {
-  font-size: 0.8rem;
-  color: var(--text);
-  margin-bottom: 0.3rem;
-}
-
+.input-group { display: flex; flex-direction: column; }
+.input-group label { font-size: 0.82rem; color: var(--text); margin-bottom: 0.3rem; }
+.input-group .field-hint { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 0.3rem; }
 .input-group input {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.5rem 0.7rem;
-  color: var(--text-bright);
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  outline: none;
-  transition: border-color 0.15s;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.6rem 0.8rem; color: var(--text-bright); font-family: var(--mono);
+  font-size: 0.9rem; outline: none; transition: border-color 0.15s;
+}
+.input-group input:focus { border-color: var(--blue); }
+.input-group input.danger { border-color: var(--red); background: var(--red-bg); }
+
+/* ─── VECTOR GRID ─── */
+.section-label {
+  font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-dim); margin-bottom: 0.4rem; display: flex;
+  align-items: center; gap: 0.3rem;
 }
 
-.input-group input:focus {
-  border-color: var(--blue);
-}
-
-.vector-grid {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 0.4rem;
-  margin-bottom: 0.5rem;
-}
-
-.vector-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.vector-cell .idx {
-  font-size: 0.6rem;
-  color: var(--text);
-  opacity: 0.4;
-  margin-bottom: 0.2rem;
-}
-
+.vector-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 0.3rem; margin-bottom: 0.5rem; }
+.vector-cell { display: flex; flex-direction: column; align-items: center; }
+.vector-cell .idx { font-size: 0.6rem; color: var(--text-dim); margin-bottom: 0.2rem; }
+.vector-cell .name { font-size: 0.55rem; color: var(--text-dim); text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vector-cell input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.35rem 0.2rem;
-  color: var(--text-bright);
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  text-align: center;
-  outline: none;
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.4rem 0.1rem; color: var(--text-bright);
+  font-family: var(--mono); font-size: 0.75rem; text-align: center; outline: none;
 }
+.vector-cell input:focus { border-color: var(--blue); }
+.vector-cell input.refused { border-color: var(--red); background: var(--red-bg); color: var(--red); }
 
-.vector-cell input:focus {
-  border-color: var(--blue);
-}
-
-.vector-cell input.refused {
-  border-color: var(--red);
-  background: var(--red-bg);
-}
-
-.btn-row {
-  display: flex;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
+/* ─── BUTTONS ─── */
+.btn-row { display: flex; gap: 0.8rem; margin-top: 1rem; flex-wrap: wrap; }
 button {
-  background: var(--blue);
-  color: var(--bg);
-  border: none;
-  border-radius: 6px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
+  background: var(--blue); color: var(--bg); border: none; border-radius: 6px;
+  padding: 0.65rem 1.4rem; font-size: 0.9rem; font-weight: 600; cursor: pointer;
   transition: opacity 0.15s;
 }
-
 button:hover { opacity: 0.85; }
+button.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
 
-button.secondary {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
+.scenarios { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.8rem; }
+.scenario-btn {
+  font-size: 0.75rem; padding: 0.35rem 0.8rem; background: transparent;
+  color: var(--text); border: 1px solid var(--border); border-radius: 4px; cursor: pointer;
 }
+.scenario-btn:hover { border-color: var(--blue); color: var(--blue); }
+.scenario-btn.active { border-color: var(--blue); background: var(--blue-bg); color: var(--blue); }
 
-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* Results */
-.result-card {
-  display: none;
-}
-
-.result-card.visible {
-  display: block;
-}
+/* ─── RESULTS ─── */
+.result-card { display: none; }
+.result-card.visible { display: block; }
 
 .status-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1rem;
+  border-radius: 6px; font-weight: 600; font-size: 0.95rem; margin-bottom: 1rem;
 }
+.status-banner.green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+.status-banner.red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-.status-banner.green {
-  background: var(--green-bg);
-  color: var(--green);
-  border: 1px solid var(--green);
-}
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 600px) { .result-grid { grid-template-columns: 1fr; } }
 
-.status-banner.red {
-  background: var(--red-bg);
-  color: var(--red);
-  border: 1px solid var(--red);
-}
+.result-item { background: var(--bg); border-radius: 6px; padding: 0.9rem; }
+.result-item .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.3rem; }
+.result-item .value { font-family: var(--mono); font-size: 1.15rem; color: var(--text-bright); }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.result-item {
-  background: var(--bg);
-  border-radius: 6px;
-  padding: 0.8rem;
-}
-
-.result-item .label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  opacity: 0.6;
-  margin-bottom: 0.2rem;
-}
-
-.result-item .value {
-  font-family: var(--mono);
-  font-size: 1.1rem;
-  color: var(--text-bright);
-}
-
-.scores-bar-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.4rem;
-  height: 120px;
-  padding-top: 1rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.bar {
-  flex: 1;
-  background: var(--blue);
-  border-radius: 3px 3px 0 0;
-  position: relative;
-  min-height: 2px;
-  transition: height 0.3s;
-}
-
-.bar.vetoed {
-  background: var(--red);
-  opacity: 0.5;
-}
-
-.bar .bar-label {
-  position: absolute;
-  bottom: -1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.55rem;
-  color: var(--text);
-  opacity: 0.4;
-}
-
-.bar .bar-value {
-  position: absolute;
-  top: -1.1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.55rem;
-  color: var(--text);
-  font-family: var(--mono);
-}
+.scores-bar-chart { display: flex; align-items: flex-end; gap: 0.4rem; height: 140px; padding-top: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.bar { flex: 1; background: var(--blue); border-radius: 3px 3px 0 0; position: relative; min-height: 2px; transition: height 0.4s ease; }
+.bar.vetoed { background: var(--red); opacity: 0.4; }
+.bar .bar-label { position: absolute; bottom: -1.2rem; left: 50%; transform: translateX(-50%); font-size: 0.55rem; color: var(--text-dim); }
+.bar .bar-value { position: absolute; top: -1.1rem; left: 50%; transform: translateX(-50%); font-size: 0.55rem; color: var(--text); font-family: var(--mono); }
 
 .json-output {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.8rem;
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  color: var(--text);
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-all;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.8rem; font-family: var(--mono); font-size: 0.75rem; color: var(--text);
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all;
 }
 
-.scenarios {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 0.8rem;
-}
+/* ─── TABLE ─── */
+.intervention-table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.8rem; }
+.intervention-table th, .intervention-table td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); }
+.intervention-table th { color: var(--text-dim); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
+.intervention-table td { color: var(--text); }
+.intervention-table tr:hover { background: var(--surface-2); }
+.intervention-table .idx-col { color: var(--blue); font-family: var(--mono); width: 2.5rem; }
 
-.scenario-btn {
-  font-size: 0.75rem;
-  padding: 0.35rem 0.7rem;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: pointer;
+/* ─── ACCORDION ─── */
+.accordion { margin-bottom: 1rem; }
+.accordion-header {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 0.8rem 1rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem;
+  color: var(--text-bright); font-weight: 600;
 }
+.accordion-header:hover { background: var(--surface-2); }
+.accordion-content { display: none; padding: 1rem 1.2rem; }
+.accordion-content.open { display: block; }
+.accordion-content p { margin-bottom: 0.6rem; font-size: 0.85rem; }
+.accordion-content ul { margin-left: 1.2rem; margin-bottom: 0.6rem; }
+.accordion-content li { font-size: 0.85rem; margin-bottom: 0.3rem; }
 
-.scenario-btn:hover {
-  border-color: var(--blue);
-  color: var(--blue);
-}
+/* ─── FOOTER ─── */
+footer { text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--text-dim); }
+footer a { color: var(--blue); text-decoration: none; }
 
-footer {
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 0.7rem;
-  color: var(--text);
-  opacity: 0.4;
+/* ─── MISC ─── */
+.formula-box {
+  font-family: var(--mono); font-size: 0.82rem; color: var(--blue);
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.8rem 1rem; margin: 0.8rem 0; display: block;
 }
-
-@media (max-width: 600px) {
-  .input-row { grid-template-columns: 1fr; }
-  .result-grid { grid-template-columns: 1fr; }
-  .vector-grid { grid-template-columns: repeat(9, 1fr); gap: 0.2rem; }
-}
+.equation-label { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 0.2rem; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<header>
+<!-- ═══════════════ HERO ═══════════════ -->
+<div class="hero">
   <h1>🧬 CGNR Matrix CDSS</h1>
-  <div class="subtitle">Constraint-Grounded Nutritional Recovery — Clinical Decision Support System</div>
+  <div class="tagline">Constraint-Grounded Nutritional Recovery — Clinical Decision Support for Post-Gastrectomy Oncology Nutrition</div>
   <div class="badges">
     <span class="badge green">3 Safety Gates</span>
     <span class="badge blue">n=9 Interventions</span>
-    <span class="badge">SOC-29</span>
+    <span class="badge orange">SOC-29 Liability</span>
+    <span class="badge red">Research Prototype</span>
     <span class="badge">v2.1.0</span>
-  </div>
-</header>
-
-<!-- Input Card -->
-<div class="card">
-  <h2>📋 Patient Input</h2>
-
-  <div class="input-row">
-    <div class="input-group">
-      <label>Serum CRP (mg/dL)</label>
-      <input type="number" id="crp" value="12.0" step="0.1" min="0">
-    </div>
-    <div class="input-group">
-      <label>CORCONDIA (%)</label>
-      <input type="number" id="corcondia" value="88.5" step="0.1" min="0">
-    </div>
-  </div>
-
-  <div class="section-label">Evidence Scores E(B) — 9 interventions</div>
-  <div class="vector-grid" id="scores-grid"></div>
-
-  <div class="section-label" style="margin-top:1rem;">Compliance Vector f ∈ [0,1]⁹ — 0 = refused</div>
-  <div class="vector-grid" id="compliance-grid"></div>
-
-  <div class="scenarios">
-    <button class="scenario-btn" onclick="loadScenario('normal')">🟢 Normal</button>
-    <button class="scenario-btn" onclick="loadScenario('sepsis')">🔴 Sepsis</button>
-    <button class="scenario-btn" onclick="loadScenario('rank')">🔴 Rank Corruption</button>
-    <button class="scenario-btn" onclick="loadScenario('abandon')">🔴 Tier 3 Escalation</button>
-  </div>
-
-  <div class="btn-row">
-    <button onclick="evaluate()">⚡ Evaluate Pipeline</button>
-    <button class="secondary" onclick="resetForm()">↺ Reset</button>
   </div>
 </div>
 
-<!-- Result Card -->
-<div class="card result-card" id="result-card">
-  <h2>📊 Pipeline Result</h2>
-  <div id="result-content"></div>
+<!-- ═══════════════ INTRODUCTION ═══════════════ -->
+<div class="section">
+  <div class="section-title">📖 What Is This?</div>
+  <div class="card">
+    <p style="font-size:0.88rem;">
+      The <strong>CGNR Matrix</strong> is a mathematical framework for computing
+      <strong>evidence-weighted nutritional intervention scores</strong> for patients
+      recovering from <strong>total or subtotal gastrectomy</strong>, typically performed
+      for gastric or esophageal cancer. It uses a <strong>3-mode tensor model</strong>
+      to combine clinical evidence, hormonal state, and patient compliance into a
+      single decision vector of 9 intervention scores.
+    </p>
+    <div class="callout">
+      <strong>The core problem:</strong> After gastrectomy, patients enter a
+      <em>catabolic crisis</em> — severe inflammation drives hormonal disruption that
+      can inflate nutritional evidence scores up to <strong>60×</strong>, producing
+      dangerously aggressive recommendations. The CGNR Matrix intercepts this through
+      three deterministic safety gates before any score reaches the clinician.
+    </div>
+    <p style="font-size:0.88rem; margin-top:0.6rem;">
+      This is a <strong>research prototype</strong>, not a medical device or FDA-cleared
+      software. The hormonal-attenuation constants are theoretical baselines. Do not
+      use this for actual clinical decisions without clinical calibration and
+      regulatory review.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════ CLINICAL CONTEXT ═══════════════ -->
+<div class="section">
+  <div class="section-title">🏥 Clinical Use Case</div>
+  <div class="card">
+    <h3>Post-Gastrectomy Oncology Nutrition</h3>
+    <p style="font-size:0.88rem; margin-bottom:0.8rem;">
+      Gastrectomy (removal of the stomach, partial or total) is the primary curative
+      treatment for gastric cancer. Post-surgery, patients face:
+    </p>
+    <ul style="font-size:0.85rem; margin-left:1.2rem; margin-bottom:0.8rem;">
+      <li><strong>Severe catabolic state</strong> — the body breaks down muscle and fat at an accelerated rate, driven by surgical trauma and systemic inflammation</li>
+      <li><strong>Hormonal disruption</strong> — ghrelin (hunger hormone) collapses after stomach removal; leptin, insulin, and GLP-1 signalling are disrupted</li>
+      <li><strong>CRP elevation</strong> — C-reactive protein rises as a systemic inflammation marker. CRP &gt; 50 mg/dL signals potential <strong>sepsis</strong>, where standard nutritional logic becomes invalid</li>
+      <li><strong>CORCONDIA diagnostic</strong> — core consistency of the tensor decomposition; a measure of whether the statistical model is sound or has degraded (rank erasure)</li>
+      <li><strong>Patient compliance variability</strong> — patients may refuse specific interventions (e.g., a vegan patient refusing MCT oil, or a patient with dumping syndrome refusing high-osmolarity feeds)</li>
+    </ul>
+    <p style="font-size:0.88rem;">
+      The CGNR Matrix computes a <strong>9-dimensional evidence vector</strong>, one
+      score per intervention, and applies three safety gates to ensure the output is
+      statistically sound, hormonally calibrated, and respects patient autonomy.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<div class="section">
+  <div class="section-title">⚙️ How the Pipeline Works</div>
+  <div class="section-subtitle">Three deterministic gates, executed sequentially. Any gate can block the entire pipeline with a Hard Stop.</div>
+
+  <div class="gate-grid">
+    <!-- Gate 1 -->
+    <div class="gate-card">
+      <span class="gate-num">GATE 1</span>
+      <h4>Dynamic Floor</h4>
+      <div class="spof">Resolves SPOF P0-1: Sepsis Score Inflation</div>
+      <p>
+        Computes the <strong>hormonal attenuation coefficient</strong> <em>h(CRP)</em>
+        from the patient's C-reactive protein level. At low CRP (no inflammation),
+        h ≈ 1.0 (full hormonal contribution). As CRP rises toward the sepsis
+        threshold (50 mg/dL), h collapses toward 0. At CRP ≥ 50, the gate issues a
+        <strong>Hard Stop</strong> — the hormonal signal is set to exactly 0.
+      </p>
+      <span class="formula">h = 1 / (1 + e^(k·(CRP − 25)))</span>
+      <p style="margin-top:0.5rem; font-size:0.78rem; color:var(--text-dim);">
+        Without this gate, hormonal factors inflate evidence scores up to 60× during
+        catabolic crisis, producing dangerously aggressive recommendations.
+      </p>
+    </div>
+
+    <!-- Gate 2 -->
+    <div class="gate-card">
+      <span class="gate-num">GATE 2</span>
+      <h4>3σ Residual Norm</h4>
+      <div class="spof">Resolves SPOF P0-2: Rank Erasure</div>
+      <p>
+        Checks the <strong>CORCONDIA core consistency</strong> — a diagnostic that
+        measures whether the tensor decomposition is statistically sound. If
+        CORCONDIA falls below <strong>μ − 3σ = 70%</strong> (target 85%, σ=5%), the
+        model has suffered <em>rank erasure</em> and its outputs are corrupt.
+      </p>
+      <span class="formula">Accept if CORCONDIA ≥ 70</span>
+      <p style="margin-top:0.5rem; font-size:0.78rem; color:var(--text-dim);">
+        This is a one-sided check — a higher CORCONDIA (better fit) never fails. The
+        original implementation flagged perfect fits as corrupt due to a symmetric
+        abs() error.
+      </p>
+    </div>
+
+    <!-- Gate 3 -->
+    <div class="gate-card">
+      <span class="gate-num">GATE 3</span>
+      <h4>Zero-Veto Compliance</h4>
+      <div class="spof">Resolves SPOF P0-3: Patient Abandonment</div>
+      <p>
+        Scales each evidence score by the patient's <strong>compliance factor</strong>
+        <em>f ∈ [0,1]⁹</em>. A refused intervention (f=0) zeros only that score —
+        the other 8 proceed. If <strong>≥4 of 9</strong> interventions are refused,
+        the protocol is non-viable (Tier 3 escalation).
+      </p>
+      <span class="formula">E_gated = E(B) × f (element-wise)</span>
+      <p style="margin-top:0.5rem; font-size:0.78rem; color:var(--text-dim);">
+        The original design used a scalar compliance factor — one refusal zeroed
+        the entire protocol, abandoning the patient entirely.
+      </p>
+    </div>
+  </div>
+
+  <!-- Post-gate safeguards -->
+  <div class="card" style="margin-top:1rem;">
+    <h3>Post-Gate Safeguards</h3>
+    <p style="font-size:0.85rem;">
+      After the three gates, two numerical safeguards protect the geometric-mean
+      scoring pipeline:
+    </p>
+    <ul style="font-size:0.85rem; margin-left:1.2rem; margin-top:0.5rem;">
+      <li><strong>CLIP[0,1] (S-22):</strong> All scores are clamped to [0, 1] to prevent range violations</li>
+      <li><strong>Laplace zero-guard (S-06):</strong> Exact zeros are replaced with ε=1e-6 to prevent log(0) crashes in the geometric mean, then re-clipped to [0, 1]</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════ VARIABLES EXPLAINED ═══════════════ -->
+<div class="section">
+  <div class="section-title">📊 Variables Explained</div>
+  <div class="card">
+    <table class="intervention-table">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Type</th>
+          <th>Clinical meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CRP</strong></td>
+          <td>float, mg/dL</td>
+          <td>C-reactive protein — systemic inflammation marker. Normal &lt; 10. Moderate 10–50. ≥50 suggests sepsis (triggers Gate 1 Hard Stop).</td>
+        </tr>
+        <tr>
+          <td><strong>CORCONDIA</strong></td>
+          <td>float, %</td>
+          <td>Core consistency diagnostic of the tensor decomposition. ≥85 = excellent. 70–85 = acceptable. &lt;70 = rank erasure (triggers Gate 2).</td>
+        </tr>
+        <tr>
+          <td><strong>E(B)</strong></td>
+          <td>array[9], [0–1]</td>
+          <td>Evidence scores — the raw Bayesian evidence for each of 9 nutritional interventions, computed from the tensor model prior to gating.</td>
+        </tr>
+        <tr>
+          <td><strong>f</strong></td>
+          <td>array[9], [0–1]</td>
+          <td>Compliance vector — per-intervention adherence factor. 1 = full compliance, 0.5 = partial, 0 = refused. ≥4 refusals triggers Gate 3.</td>
+        </tr>
+        <tr>
+          <td><strong>h_hormonal</strong></td>
+          <td>float, [0–1]</td>
+          <td>Output of Gate 1 — the attenuation coefficient. Scales the hormonal contribution to evidence. Near 1 = no attenuation, near 0 = full suppression.</td>
+        </tr>
+        <tr>
+          <td><strong>Gated scores</strong></td>
+          <td>array[9], [0–1]</td>
+          <td>Final output — E(B) × f × safeguards. Each score represents the evidence-weighted, compliance-adjusted, safeguarded recommendation per intervention.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════ THE 9 INTERVENTIONS ═══════════════ -->
+<div class="section">
+  <div class="section-title">💊 The 9 Interventions</div>
+  <div class="section-subtitle">The n=9 dimensionality corresponds to 9 nutritional interventions in the CGNR protocol. These are the priors (p1–p9) from the tensor model.</div>
+  <div class="card">
+    <table class="intervention-table">
+      <thead>
+        <tr>
+          <th class="idx-col">#</th>
+          <th>Intervention</th>
+          <th>Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="idx-col">1</td><td>High-protein oral nutrition</td><td>Counter catabolism; preserve lean body mass</td></tr>
+        <tr><td class="idx-col">2</td><td>Enteral feeding (tube)</td><td>Ensure caloric intake when oral intake insufficient</td></tr>
+        <tr><td class="idx-col">3</td><td>MCT oil supplementation</td><td>Rapid-absorption lipid; bypasses lymphatic delays post-gastrectomy</td></tr>
+        <tr><td class="idx-col">4</td><td>Vitamin B12 injection</td><td>Intrinsic factor lost with stomach; mandatory post-gastrectomy</td></tr>
+        <tr><td class="idx-col">5</td><td>Iron supplementation</td><td>Post-surgical anemia; impaired absorption without gastric acid</td></tr>
+        <tr><td class="idx-col">6</td><td>Calcium + Vitamin D</td><td>Bone density loss from malabsorption;Dumping syndrome prevention</td></tr>
+        <tr><td class="idx-col">7</td><td>Probiotics / gut microbiome</td><td>Restore microbiome disrupted by surgery and antibiotics</td></tr>
+        <tr><td class="idx-col">8</td><td>Small frequent meals</td><td>Prevent dumping syndrome; maximize absorption capacity</td></tr>
+        <tr><td class="idx-col">9</td><td>Oral rehydration solution</td><td>Electrolyte management; prevent dehydration from altered GI transit</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Note:</strong> The intervention mapping above is illustrative. The actual
+      intervention definitions are specified in the Main Paper's clinical protocol
+      (Annex S6). The code operates on abstract indices #1–#9.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ INTERACTIVE DEMO ═══════════════ -->
+<div class="section">
+  <div class="section-title">🧪 Interactive Demo</div>
+  <div class="section-subtitle">Adjust the patient parameters, click Evaluate, and see the pipeline gates in action.</div>
+
+  <div class="card">
+    <h3>📋 Patient Input</h3>
+
+    <!-- CRP + CORCONDIA -->
+    <div class="input-row">
+      <div class="input-group">
+        <label>
+          Serum CRP (mg/dL)
+          <span class="tooltip-icon">?<span class="tooltip-content">
+            <strong>C-reactive protein</strong> — systemic inflammation marker in mg/dL.<br><br>
+            <strong>Range guide:</strong><br>
+            • &lt;10: normal / mild inflammation<br>
+            • 10–50: moderate inflammation (surgical recovery)<br>
+            • ≥50: sepsis threshold → <strong>Gate 1 Hard Stop</strong><br><br>
+            <em>Reference: McClave 2016, Singer 2019 (Sepsis-3 criteria)</em>
+          </span></span>
+        </label>
+        <input type="number" id="crp" value="12.0" step="0.1" min="0">
+        <div class="field-hint" id="crp-hint">Moderate inflammation (surgical recovery range)</div>
+      </div>
+      <div class="input-group">
+        <label>
+          CORCONDIA (%)
+          <span class="tooltip-icon">?<span class="tooltip-content">
+            <strong>Core consistency diagnostic</strong> — measures whether the tensor decomposition is statistically sound.<br><br>
+            <strong>Range guide:</strong><br>
+            • ≥85: excellent (target μ)<br>
+            • 70–85: acceptable (within 3σ)<br>
+            • &lt;70: <strong>rank erasure</strong> → Gate 2 blocks<br><br>
+            <em>Higher is always better. A perfect fit (100%) never fails.</em>
+          </span></span>
+        </label>
+        <input type="number" id="corcondia" value="88.5" step="0.1" min="0">
+        <div class="field-hint" id="corcondia-hint">Excellent — above target (85%)</div>
+      </div>
+    </div>
+
+    <!-- Evidence scores -->
+    <div class="section-label" style="margin-top:1.2rem;">
+      Evidence Scores E(B)
+      <span class="tooltip-icon">?<span class="tooltip-content">
+        <strong>Evidence scores</strong> — the raw Bayesian evidence for each of the 9 interventions, computed from the 3-mode tensor model.<br><br>
+        Each value ∈ [0, 1] represents the model's confidence in that intervention based on patient data, prior to any gating or compliance adjustment.<br><br>
+        <em>These are the "priors" p1–p9 from the Main Paper.</em>
+      </span></span>
+    </div>
+    <div class="vector-grid" id="scores-grid"></div>
+
+    <!-- Compliance -->
+    <div class="section-label" style="margin-top:1rem;">
+      Compliance Vector f ∈ [0,1]⁹
+      <span class="tooltip-icon">?<span class="tooltip-content">
+        <strong>Compliance vector</strong> — per-intervention adherence factor.<br><br>
+        • <strong>1.0</strong> = full compliance<br>
+        • <strong>0.5</strong> = partial adherence<br>
+        • <strong>0.0</strong> = refused (intervention vetoed)<br><br>
+        ≥4 refusals (zeros) triggers <strong>Gate 3 Hard Stop</strong> (Tier 3 escalation — protocol non-viable).
+      </span></span>
+    </div>
+    <div class="vector-grid" id="compliance-grid"></div>
+
+    <!-- Scenario buttons -->
+    <div class="scenarios" style="margin-top:1.2rem;">
+      <button class="scenario-btn" onclick="loadScenario('normal')">🟢 Normal Patient</button>
+      <button class="scenario-btn" onclick="loadScenario('sepsis')">🔴 Sepsis (CRP ≥ 50)</button>
+      <button class="scenario-btn" onclick="loadScenario('rank')">🔴 Rank Corruption (CORCONDIA &lt; 70)</button>
+      <button class="scenario-btn" onclick="loadScenario('abandon')">🔴 Tier 3 (≥4 refusals)</button>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="btn-row">
+      <button onclick="evaluate()">⚡ Evaluate Pipeline</button>
+      <button class="secondary" onclick="resetForm()">↺ Reset to defaults</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="card result-card" id="result-card">
+    <h3>📊 Pipeline Result</h3>
+    <div id="result-content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ EDGE CASES ═══════════════ -->
+<div class="section">
+  <div class="section-title">⚠️ Edge Cases & Safety Behavior</div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('edge1')">
+      <span>🔴 Gate 1: Sepsis Hard Stop (CRP ≥ 50 mg/dL)</span>
+      <span>▾</span>
+    </div>
+    <div class="accordion-content" id="edge1">
+      <p>When CRP reaches or exceeds 50 mg/dL, the hormonal attenuation coefficient <em>h</em> is set to exactly 0.0 and the pipeline blocks immediately.</p>
+      <p><strong>Clinical meaning:</strong> At sepsis-level inflammation, the hormonal disruption is so severe that nutritional evidence scores are unreliable. Any recommendation would be based on corrupted hormonal input. The system refuses to produce a recommendation — the clinician must treat the sepsis first, then re-evaluate.</p>
+      <p><strong>What the clinician sees:</strong> A RED status with <code>GATE_1: Sepsis detected (CRP 55.0 ≥ 50.0)</code>. No scores are produced.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('edge2')">
+      <span>🔴 Gate 2: Rank Erasure (CORCONDIA &lt; 70%)</span>
+      <span>▾</span>
+    </div>
+    <div class="accordion-content" id="edge2">
+      <p>When CORCONDIA falls below 70% (μ − 3σ = 85 − 15), the tensor decomposition has suffered <em>rank erasure</em> — the statistical model is no longer sound.</p>
+      <p><strong>Clinical meaning:</strong> The evidence scores E(B) are derived from a tensor decomposition. If the decomposition degrades (too few data points, collinear factors, numerical instability), the scores are statistically corrupt but may <em>look</em> valid. Gate 2 catches this before it reaches the clinician.</p>
+      <p><strong>Why one-sided:</strong> CORCONDIA is a "higher is better" metric. A value of 100% (perfect fit) is <em>better</em>, not suspicious. The check only blocks when the value is <em>too low</em>.</p>
+      <p><strong>What the clinician sees:</strong> A RED status with <code>GATE_2: CORCONDIA 45.00 below 3σ floor 70.00</code>. No scores are produced.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('edge3')">
+      <span>🔴 Gate 3: Tier 3 Escalation (≥4/9 refusals)</span>
+      <span>▾</span>
+    </div>
+    <div class="accordion-content" id="edge3">
+      <p>When 4 or more of the 9 interventions are refused (f=0), the protocol is deemed <em>non-viable</em> and the pipeline blocks.</p>
+      <p><strong>Clinical meaning:</strong> With fewer than 6 viable interventions, the nutritional protocol cannot provide adequate coverage. This triggers <strong>Tier 3 escalation</strong> — the case is escalated to the Multidisciplinary Team (MDT) for an alternative care plan.</p>
+      <p><strong>Why per-intervention, not scalar:</strong> The original design used a single scalar compliance factor. One refusal (f=0) zeroed the <em>entire</em> protocol — the patient was abandoned nutritionally. The vector approach (f ∈ [0,1]⁹) allows each intervention to be independently vetoed.</p>
+      <p><strong>What the clinician sees:</strong> A RED status with <code>GATE_3: Protocol non-viable (5/9 interventions refused)</code>. No scores are produced.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('edge4')">
+      <span>🛡️ Laplace Zero-Guard & CLIP Invariant</span>
+      <span>▾</span>
+    </div>
+    <div class="accordion-content" id="edge4">
+      <p>After gating, if an intervention was refused (f=0), its gated score becomes exactly 0.0. The geometric-mean scoring pipeline would crash on <code>log(0)</code>.</p>
+      <p><strong>S-06 (Laplace):</strong> Replaces exact zeros with ε = 1e-6 — a negligible value that prevents the crash without materially affecting the score.</p>
+      <p><strong>S-22 (CLIP):</strong> All scores are clamped to [0, 1] <em>before and after</em> the Laplace step, preserving the range invariant. The re-clip after Laplace is critical — the original implementation added ε to <em>all</em> elements, pushing 1.0 → 1.000001 and violating the invariant.</p>
+      <p><strong>What the clinician sees:</strong> A refused intervention shows a score of <code>0.000001</code> (effectively 0) in the output vector, while all other scores remain correctly in [0, 1].</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAccordion('edge5')">
+      <span>🔬 NaN/Inf Rejection</span>
+      <span>▾</span>
+    </div>
+    <div class="accordion-content" id="edge5">
+      <p>All input paths reject NaN (Not a Number) and Inf (Infinity) with a <code>ValueError</code> before any gate logic executes.</p>
+      <p><strong>Why this matters:</strong> In a clinical setting, a sensor malfunction or data pipeline error can produce NaN. If NaN propagates through the gates, it silently produces a NaN score that might appear as a valid number in the clinician's dashboard. The CGNR Matrix rejects any non-finite input immediately.</p>
+      <p><strong>What the clinician sees:</strong> An explicit error — <code>ValueError: crp_value must be finite (got nan)</code> — rather than a silent NaN in the output.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOW TO USE CLINICALLY ═══════════════ -->
+<div class="section">
+  <div class="section-title">👨‍⚕️ How to Use This Clinically</div>
+  <div class="card">
+    <ol style="font-size:0.88rem; margin-left:1.2rem; margin-bottom:1rem;">
+      <li style="margin-bottom:0.6rem;"><strong>Obtain the patient's CRP</strong> from the latest blood panel. Enter it in mg/dL.</li>
+      <li style="margin-bottom:0.6rem;"><strong>Obtain the CORCONDIA value</strong> from the tensor decomposition run (this is computed by the solver layer, not manually).</li>
+      <li style="margin-bottom:0.6rem;"><strong>Review the evidence scores E(B)</strong> — these are the raw priors from the tensor model, one per intervention.</li>
+      <li style="margin-bottom:0.6rem;"><strong>Assess patient compliance</strong> for each of the 9 interventions. Set f=1 for full compliance, f=0.5 for partial, f=0 for refused.</li>
+      <li style="margin-bottom:0.6rem;"><strong>Click Evaluate</strong>. The pipeline runs all three gates sequentially.</li>
+      <li style="margin-bottom:0.6rem;"><strong>Interpret the result:</strong>
+        <ul style="margin-top:0.3rem;">
+          <li><strong>🟢 GREEN:</strong> All gates passed. The 9 scores are your evidence-weighted, compliance-adjusted recommendations. Higher score = stronger evidence for that intervention.</li>
+          <li><strong>🔴 RED:</strong> A gate blocked the pipeline. Read the incident to understand why. Do <em>not</em> proceed with the raw E(B) scores — they are ungated and potentially unsafe.</li>
+        </ul>
+      </li>
+      <li style="margin-bottom:0.6rem;"><strong>For RED results:</strong> Treat the underlying condition first (sepsis, rank corruption, or compliance issue), then re-evaluate. For Tier 3 escalation, convene the MDT.</li>
+    </ol>
+    <div class="callout warn">
+      <strong>⚠️ Clinical disclaimer:</strong> This is a research prototype. The CGNR
+      Matrix is <em>not</em> a medical device and has not been validated for clinical
+      use. All outputs are advisory. The treating clinician retains full decision
+      authority. The SOC-29 framework provides algorithmic liability protection for
+      the system's Hard Stops — it does <em>not</em> override clinical judgment.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FORMULA REFERENCE ═══════════════ -->
+<div class="section">
+  <div class="section-title">📐 Mathematical Reference</div>
+  <div class="card">
+    <div class="equation-label">Gate 1 — Hormonal attenuation coefficient:</div>
+    <span class="formula-box">h(CRP) = 1 / (1 + exp(k · (CRP − midpoint)))</span>
+    <p style="font-size:0.82rem; color:var(--text-dim);">
+      k = 0.18, midpoint = 25 mg/dL, threshold = 50 mg/dL. Hard Stop if CRP ≥ threshold (h = 0).
+    </p>
+
+    <div class="equation-label" style="margin-top:1rem;">Gate 2 — One-sided 3σ lower bound:</div>
+    <span class="formula-box">Accept if CORCONDIA ≥ μ − 3σ</span>
+    <p style="font-size:0.82rem; color:var(--text-dim);">
+      μ = 85%, σ = 5%, floor = 70%. RankFailure if CORCONDIA &lt; floor.
+    </p>
+
+    <div class="equation-label" style="margin-top:1rem;">Gate 3 — Element-wise compliance scaling:</div>
+    <span class="formula-box">E_gated[i] = E(B)[i] × f[i],  ∀i ∈ {1..9}</span>
+    <p style="font-size:0.82rem; color:var(--text-dim);">
+      Hard Stop if count(f[i] ≤ 0) ≥ 4 (Tier 3 threshold).
+    </p>
+
+    <div class="equation-label" style="margin-top:1rem;">Safeguards:</div>
+    <span class="formula-box">v = CLIP(E_gated, 0, 1) → WHERE(v==0, 1e-6, v) → CLIP(v, 0, 1)</span>
+    <p style="font-size:0.82rem; color:var(--text-dim);">
+      S-22 (CLIP) + S-06 (Laplace ε = 1e-6). Re-clip preserves [0,1] invariant.
+    </p>
+  </div>
 </div>
 
 <footer>
-  CGNR Matrix CDSS v2.1.0 · MIT License · Research prototype, not a medical device
+  <p>CGNR Matrix CDSS v2.1.0 · <a href="https://github.com/HyyperNab/CGNR-Matrix-CDSS">GitHub</a> · MIT License</p>
+  <p style="margin-top:0.3rem;">Research prototype. Not a medical device. <a href="https://github.com/HyyperNab/CGNR-Matrix-CDSS/blob/main/REPOSITORY_LOCK.md">Repository lock</a> · <a href="https://github.com/HyyperNab/CGNR-Matrix-CDSS/blob/main/docs/SPOF_ANALYSIS.md">SPOF analysis</a></p>
 </footer>
 
 </div>
@@ -433,21 +698,25 @@ const scenarios = {
     crp: 12.0, corcondia: 88.5,
     scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
     compliance: [1, 1, 1, 1, 1, 1, 0, 1, 1],
+    desc: "Post-surgical patient, moderate inflammation, 1 intervention refused (#7 probiotics)."
   },
   sepsis: {
     crp: 55.0, corcondia: 88.5,
     scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
     compliance: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    desc: "CRP = 55 mg/dL — sepsis-level inflammation. Gate 1 blocks immediately."
   },
   rank: {
     crp: 12.0, corcondia: 45.0,
     scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
     compliance: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    desc: "CORCONDIA = 45% — below the 3σ floor (70%). Tensor decomposition has degraded. Gate 2 blocks."
   },
   abandon: {
     crp: 12.0, corcondia: 88.5,
     scores: [0.85, 0.90, 0.45, 0.70, 0.82, 0.61, 0.95, 0.52, 0.77],
     compliance: [0, 0, 0, 0, 0, 1, 1, 1, 1],
+    desc: "5 of 9 interventions refused — protocol non-viable. Gate 3 blocks (Tier 3 escalation)."
   },
 };
 
@@ -465,8 +734,6 @@ function buildGrid(id, values) {
     input.value = values[i];
     input.step = '0.01';
     input.min = '0';
-    input.dataset.idx = i;
-    input.dataset.grid = id;
     if (id === 'compliance-grid' && values[i] === 0) {
       input.classList.add('refused');
     }
@@ -487,13 +754,57 @@ function getVector(id) {
   return Array.from(inputs).map(i => parseFloat(i.value) || 0);
 }
 
+function updateHints() {
+  const crp = parseFloat(document.getElementById('crp').value) || 0;
+  const corcondia = parseFloat(document.getElementById('corcondia').value) || 0;
+  const crpHint = document.getElementById('crp-hint');
+  const corHint = document.getElementById('corcondia-hint');
+  const crpInput = document.getElementById('crp');
+  const corInput = document.getElementById('corcondia');
+
+  if (crp >= 50) {
+    crpHint.textContent = '⚠️ Sepsis threshold — Gate 1 will Hard Stop';
+    crpHint.style.color = 'var(--red)';
+    crpInput.classList.add('danger');
+  } else if (crp >= 30) {
+    crpHint.textContent = 'High inflammation — significant hormonal attenuation';
+    crpHint.style.color = 'var(--orange)';
+    crpInput.classList.remove('danger');
+  } else if (crp >= 10) {
+    crpHint.textContent = 'Moderate inflammation (surgical recovery range)';
+    crpHint.style.color = 'var(--text-dim)';
+    crpInput.classList.remove('danger');
+  } else {
+    crpHint.textContent = 'Low/normal inflammation';
+    crpHint.style.color = 'var(--green)';
+    crpInput.classList.remove('danger');
+  }
+
+  if (corcondia < 70) {
+    corHint.textContent = '⚠️ Below 3σ floor — Gate 2 will block';
+    corHint.style.color = 'var(--red)';
+    corInput.classList.add('danger');
+  } else if (corcondia < 85) {
+    corHint.textContent = 'Acceptable — within 3σ but below target';
+    corHint.style.color = 'var(--orange)';
+    corInput.classList.remove('danger');
+  } else {
+    corHint.textContent = 'Excellent — above target (85%)';
+    corHint.style.color = 'var(--green)';
+    corInput.classList.remove('danger');
+  }
+}
+
 function loadScenario(name) {
   const s = scenarios[name];
   document.getElementById('crp').value = s.crp;
   document.getElementById('corcondia').value = s.corcondia;
   buildGrid('scores-grid', s.scores);
   buildGrid('compliance-grid', s.compliance);
+  updateHints();
   document.getElementById('result-card').classList.remove('visible');
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
 }
 
 function resetForm() {
@@ -501,7 +812,9 @@ function resetForm() {
   document.getElementById('corcondia').value = 88.5;
   buildGrid('scores-grid', defaultScores);
   buildGrid('compliance-grid', defaultCompliance);
+  updateHints();
   document.getElementById('result-card').classList.remove('visible');
+  document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
 }
 
 async function evaluate() {
@@ -511,11 +824,10 @@ async function evaluate() {
   const compliance = getVector('compliance-grid');
 
   const body = { crp, corcondia, scores, compliance };
-
   const card = document.getElementById('result-card');
   const content = document.getElementById('result-content');
   card.classList.add('visible');
-  content.innerHTML = '<div style="text-align:center;padding:1rem;opacity:0.5;">Evaluating...</div>';
+  content.innerHTML = '<div style="text-align:center;padding:2rem;opacity:0.5;">⚡ Running pipeline gates...</div>';
 
   try {
     const res = await fetch('/api/evaluate', {
@@ -539,24 +851,40 @@ async function evaluate() {
 function renderResult(data, compliance) {
   const content = document.getElementById('result-content');
   const isGreen = data.flag === 'GREEN';
-
   let html = '';
 
   // Status banner
   html += '<div class="status-banner ' + (isGreen ? 'green' : 'red') + '">';
   html += '<span class="status-dot"></span>';
-  html += isGreen ? 'GREEN — Pipeline passed all safety gates' : 'RED — ' + (data.incident?.gate_id || 'BLOCKED');
+  if (isGreen) {
+    html += 'GREEN — All 3 safety gates passed. Scores are evidence-weighted and compliance-adjusted.';
+  } else {
+    const gate = data.incident?.gate_id || 'BLOCKED';
+    html += 'RED — Pipeline blocked at ' + gate + '. See incident below.';
+  }
   html += '</div>';
 
   if (isGreen) {
     // Key metrics
     html += '<div class="result-grid">';
-    html += '<div class="result-item"><div class="label">h_hormonal</div><div class="value">' + data.h_hormonal.toFixed(4) + '</div></div>';
-    html += '<div class="result-item"><div class="label">Status</div><div class="value" style="color:var(--green)">' + data.flag + '</div></div>';
+    html += '<div class="result-item"><div class="label">h_hormonal (Gate 1 output)</div><div class="value">' + data.h_hormonal.toFixed(4) + '</div></div>';
+    html += '<div class="result-item"><div class="label">Pipeline status</div><div class="value" style="color:var(--green)">' + data.flag + '</div></div>';
+    html += '</div>';
+
+    // Interpretation
+    html += '<div class="callout success" style="margin-bottom:1rem;">';
+    html += '<strong>Interpretation:</strong> The hormonal attenuation coefficient h = ' + data.h_hormonal.toFixed(4) + ' means ';
+    if (data.h_hormonal > 0.8) {
+      html += 'minimal hormonal attenuation — the patient\'s hormonal state is near-normal and evidence scores are not significantly reduced.';
+    } else if (data.h_hormonal > 0.3) {
+      html += 'moderate hormonal attenuation — inflammation is reducing the hormonal contribution to evidence by ' + ((1 - data.h_hormonal) * 100).toFixed(0) + '%.';
+    } else {
+      html += 'severe hormonal attenuation — inflammation is suppressing ' + ((1 - data.h_hormonal) * 100).toFixed(0) + '% of the hormonal signal. Scores reflect a highly conservative recommendation.';
+    }
     html += '</div>';
 
     // Bar chart
-    html += '<div class="section-label">Gated Evidence Scores</div>';
+    html += '<div class="section-label">Gated Evidence Scores (after compliance × safeguards)</div>';
     html += '<div class="scores-bar-chart">';
     data.scores.forEach((s, i) => {
       const heightPct = Math.max(s * 100, 2);
@@ -568,25 +896,64 @@ function renderResult(data, compliance) {
     });
     html += '</div>';
     html += '<div style="margin-top:1.5rem"></div>';
+
+    // Score table with interpretation
+    html += '<div class="section-label">Detailed breakdown</div>';
+    html += '<table class="intervention-table"><thead><tr><th>#</th><th>Raw E(B)</th><th>Compliance f</th><th>Gated = E(B)×f</th><th>After safeguards</th><th>Interpretation</th></tr></thead><tbody>';
+    const rawScores = getVector('scores-grid');
+    data.scores.forEach((final, i) => {
+      const raw = rawScores[i];
+      const f = compliance[i];
+      const gated = raw * f;
+      let interp = '';
+      if (f === 0) interp = '<span style="color:var(--red)">Refused (vetoed)</span>';
+      else if (final >= 0.7) interp = '<span style="color:var(--green)">Strong evidence</span>';
+      else if (final >= 0.4) interp = '<span style="color:var(--orange)">Moderate evidence</span>';
+      else interp = '<span style="color:var(--text-dim)">Weak evidence</span>';
+      html += '<tr><td class="idx-col">#' + (i+1) + '</td><td>' + raw.toFixed(2) + '</td><td>' + f.toFixed(1) + '</td><td>' + gated.toFixed(4) + '</td><td>' + final.toFixed(6) + '</td><td>' + interp + '</td></tr>';
+    });
+    html += '</tbody></table>';
+
   } else {
     // Incident details
+    const gate = data.incident?.gate_id || '?';
+    const reason = data.incident?.reason || 'Unknown';
+
+    let explanation = '';
+    if (gate === 'GATE_1') {
+      explanation = '<div class="callout danger"><strong>Gate 1 — Sepsis detected.</strong> The patient\'s CRP level has reached or exceeded the sepsis threshold (50 mg/dL). At this inflammation level, hormonal disruption makes nutritional evidence scores unreliable. <strong>Treat the sepsis first, then re-evaluate.</strong></div>';
+    } else if (gate === 'GATE_2') {
+      explanation = '<div class="callout danger"><strong>Gate 2 — Rank erasure detected.</strong> The CORCONDIA core consistency has fallen below the 3σ acceptance floor (70%). The tensor decomposition has degraded — its outputs are statistically corrupt. <strong>Re-run the tensor model with more data or check for collinear factors, then re-evaluate.</strong></div>';
+    } else if (gate === 'GATE_3') {
+      explanation = '<div class="callout danger"><strong>Gate 3 — Protocol non-viable.</strong> The patient has refused too many interventions (≥4 of 9). The remaining interventions cannot provide adequate nutritional coverage. <strong>Escalate to the Multidisciplinary Team (MDT) for an alternative care plan.</strong></div>';
+    }
+
     html += '<div class="result-grid">';
-    html += '<div class="result-item"><div class="label">Gate</div><div class="value" style="color:var(--red)">' + (data.incident?.gate_id || '?') + '</div></div>';
+    html += '<div class="result-item"><div class="label">Blocking gate</div><div class="value" style="color:var(--red)">' + gate + '</div></div>';
     html += '<div class="result-item"><div class="label">Status</div><div class="value" style="color:var(--red)">' + data.flag + '</div></div>';
     html += '</div>';
-    html += '<div class="result-item" style="margin-bottom:1rem"><div class="label">Reason</div><div style="font-family:var(--mono);font-size:0.85rem;color:var(--text-bright);margin-top:0.2rem">' + (data.incident?.reason || 'Unknown') + '</div></div>';
+    html += explanation;
+    html += '<div class="result-item" style="margin-bottom:1rem"><div class="label">Incident record (SOC-29 audit trail)</div><div style="font-family:var(--mono);font-size:0.82rem;color:var(--text-bright);margin-top:0.3rem">' + reason + '</div></div>';
   }
 
   // JSON output
-  html += '<div class="section-label">Raw JSON</div>';
+  html += '<div class="section-label" style="margin-top:1rem;">Raw JSON (API response)</div>';
   html += '<div class="json-output">' + JSON.stringify(data, null, 2) + '</div>';
 
   content.innerHTML = html;
 }
 
+function toggleAccordion(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
 // Init
 buildGrid('scores-grid', defaultScores);
 buildGrid('compliance-grid', defaultCompliance);
+document.getElementById('crp').addEventListener('input', updateHints);
+document.getElementById('corcondia').addEventListener('input', updateHints);
+updateHints();
 </script>
 </body>
 </html>
